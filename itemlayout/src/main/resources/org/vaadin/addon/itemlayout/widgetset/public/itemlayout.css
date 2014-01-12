@@ -1,0 +1,13 @@
+.v-itemlayout-slot {
+	padding: 2px 5px;
+	text-align: center;
+}
+
+.v-itemlayout-slot:focus {
+	outline: none;
+	border: 1px dotted gray;
+}
+
+.v-itemlayout-slot-selected, .v-itemlayout-slot-selected:focus {
+	border: 1px solid blue;
+}
