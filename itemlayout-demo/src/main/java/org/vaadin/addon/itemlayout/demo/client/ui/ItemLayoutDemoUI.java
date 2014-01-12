@@ -20,9 +20,11 @@
 package org.vaadin.addon.itemlayout.demo.client.ui;
 
 import org.vaadin.addon.itemlayout.grid.ItemGrid;
+import org.vaadin.addon.itemlayout.horizontal.ItemHorizontal;
 
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -49,10 +51,20 @@ public class ItemLayoutDemoUI extends UI
 	{
 		// Main layout
 		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label("Demo for ItemGrid"));
+		layout.addComponent(new Label("Demo for ItemLayout addon"));
+		Component itemGrid = initItemGridExamples();
+		layout.addComponent(itemGrid);
+		Component itemHorizontal = initItemHorizontalExamples();
+		layout.addComponent(itemHorizontal);
+
+		setContent(layout);
+	}
+
+	private Component initItemGridExamples()
+	{
 		// Layout to show examples
 		HorizontalLayout example = new HorizontalLayout();
-		layout.addComponent(example);
+		example.addComponent(new Label("Demo for ItemGrid"));
 
 		// No selection example
 		VerticalLayout noSelectionLayout = new VerticalLayout();
@@ -80,23 +92,72 @@ public class ItemLayoutDemoUI extends UI
 		multiSelection.setSelectable(true);
 		multiSelection.setMultiSelect(true);
 		multiSelectionLayout.addComponent(multiSelection);
-
-		setContent(layout);
+		return example;
 	}
 
 	private ItemGrid buildDefaultItemGrid()
 	{
-		ItemGrid singleSelection = new ItemGrid();
+		ItemGrid item = new ItemGrid();
+		IndexedContainer container = buildDefaultContainer();
+		item.setContainerDataSource(container);
+		return item;
+	}
+
+	private Component initItemHorizontalExamples()
+	{
+		// Layout to show examples
+		VerticalLayout example = new VerticalLayout();
+		example.addComponent(new Label("Demo for ItemHorizontal"));
+
+		// No selection example
+		VerticalLayout noSelectionLayout = new VerticalLayout();
+		noSelectionLayout.setMargin(true);
+		example.addComponent(noSelectionLayout);
+		noSelectionLayout.addComponent(new Label("No selection"));
+		ItemHorizontal noSelection = buildDefaultItemHorizontal();
+		noSelectionLayout.addComponent(noSelection);
+
+		// Single selection example
+		VerticalLayout singleSelectionLayout = new VerticalLayout();
+		singleSelectionLayout.setMargin(true);
+		example.addComponent(singleSelectionLayout);
+		singleSelectionLayout.addComponent(new Label("Single selection"));
+		ItemHorizontal singleSelection = buildDefaultItemHorizontal();
+		singleSelection.setSelectable(true);
+		singleSelectionLayout.addComponent(singleSelection);
+
+		// Multi selection example
+		VerticalLayout multiSelectionLayout = new VerticalLayout();
+		multiSelectionLayout.setMargin(true);
+		example.addComponent(multiSelectionLayout);
+		multiSelectionLayout.addComponent(new Label("Multi selection"));
+		ItemHorizontal multiSelection = buildDefaultItemHorizontal();
+		multiSelection.setSelectable(true);
+		multiSelection.setMultiSelect(true);
+		multiSelectionLayout.addComponent(multiSelection);
+		return example;
+	}
+
+	private ItemHorizontal buildDefaultItemHorizontal()
+	{
+		ItemHorizontal item = new ItemHorizontal();
+		IndexedContainer container = buildDefaultContainer();
+		item.setContainerDataSource(container);
+		return item;
+	}
+
+	private IndexedContainer buildDefaultContainer()
+	{
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty("caption", String.class, null);
 		container.addContainerProperty("description", String.class, null);
-		singleSelection.setContainerDataSource(container);
 		for (int i = 0; i < 25; i++)
 		{
 			Object itemId = container.addItem();
 			container.getContainerProperty(itemId, "caption").setValue("Item " + i);
 			container.getContainerProperty(itemId, "description").setValue("Item at index " + i);
 		}
-		return singleSelection;
+		return container;
 	}
+
 }
