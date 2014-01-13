@@ -14,15 +14,15 @@ import com.vaadin.ui.Component;
 public interface ItemGenerator extends Serializable
 {
 
-	/**
-	 * Called by {@link AbstractItemLayout} when a item needs to be
-	 * generated.
-	 * 
-	 * @param pSource
-	 *          the source layout
-	 * @param pItemId
-	 *          the itemId set up in associated {@link Container} for the item to be generated
-	 * @return A {@link Component} that should be rendered
-	 */
-	Component generateItem(final AbstractItemLayout pSource, final Object pItemId);
+  /**
+   * Called by {@link AbstractItemLayout} when a item needs to be
+   * generated.
+   * 
+   * @param pSource
+   *          the source layout
+   * @param pItemId
+   *          the itemId set up in associated {@link Container} for the item to be generated
+   * @return A {@link Component} that should be rendered
+   */
+  Component generateItem(final AbstractItemLayout pSource, final Object pItemId);
 }

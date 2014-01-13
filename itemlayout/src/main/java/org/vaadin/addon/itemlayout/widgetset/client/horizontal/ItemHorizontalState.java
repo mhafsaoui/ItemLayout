@@ -27,12 +27,12 @@ import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 public class ItemHorizontalState extends ItemLayoutState
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 2727334984288258608L;
-	{
-		primaryStyleName = "v-itemlayout-horizontal";
-	}
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 2727334984288258608L;
+  {
+    primaryStyleName = "v-itemlayout-horizontal";
+  }
 
 }

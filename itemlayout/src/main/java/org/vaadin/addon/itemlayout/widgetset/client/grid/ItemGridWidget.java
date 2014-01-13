@@ -8,11 +8,11 @@ import com.google.gwt.user.client.ui.Grid;
 public class ItemGridWidget extends Grid
 {
 
-	public static final String CLASSNAME = "v-itemlayout-grid";
+  public static final String CLASSNAME = "v-itemlayout-grid";
 
-	public ItemGridWidget()
-	{
-		super();
-		setStyleName(CLASSNAME);
-	}
+  public ItemGridWidget()
+  {
+    super();
+    setStyleName(CLASSNAME);
+  }
 }

@@ -157,6 +157,25 @@
 							</execution>
 						</executions>
 					</plugin>
+					<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
+			<!-- directory is cleaned properly -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>WebContent</directory>
+								</fileset>
+								<fileset>
+									<directory>src/main/webapp/VAADIN</directory>
+								</fileset>
+								<fileset>
+									<directory>src/main/webapp/WEB-INF/deploy</directory>
+								</fileset>
+							</filesets>
+						</configuration>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -198,6 +217,13 @@
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>itemlayout</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>itemlayout</artifactId>
+			<version>${project.version}</version>
+			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<!-- OSGi dependencies -->

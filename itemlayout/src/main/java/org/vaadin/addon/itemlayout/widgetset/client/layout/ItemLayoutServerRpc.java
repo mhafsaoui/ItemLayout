@@ -12,12 +12,12 @@ import com.vaadin.shared.communication.ServerRpc;
 public interface ItemLayoutServerRpc extends ServerRpc
 {
 
-	/**
-	 * Selects item with given id.
-	 * 
-	 * @param pItemIndex
-	 *          Item index to select at. Selecting the same item again and again has no effect.
-	 */
-	void selectItemAtIndex(final Integer pItemIndex);
+  /**
+   * Selects item with given id.
+   * 
+   * @param pItemIndex
+   *          Item index to select at. Selecting the same item again and again has no effect.
+   */
+  void selectItemAtIndex(final Integer pItemIndex);
 
 }

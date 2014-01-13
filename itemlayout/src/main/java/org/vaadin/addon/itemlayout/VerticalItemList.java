@@ -29,6 +29,11 @@ import com.vaadin.ui.CssLayout;
 public class VerticalItemList extends AbstractExtension
 {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3455023273637137667L;
+
   public static void extend(final CssLayout pLayout)
   {
     new VerticalItemList().extend((AbstractClientConnector) pLayout);

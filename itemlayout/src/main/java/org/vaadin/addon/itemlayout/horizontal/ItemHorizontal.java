@@ -31,32 +31,32 @@ import com.vaadin.server.PaintTarget;
 public class ItemHorizontal extends AbstractItemLayout
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 5432040675249120672L;
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 5432040675249120672L;
 
-	public ItemHorizontal()
-	{
-		super();
-	}
+  public ItemHorizontal()
+  {
+    super();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ItemGridState getState()
-	{
-		return (ItemGridState) super.getState();
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ItemGridState getState()
+  {
+    return (ItemGridState) super.getState();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
-	{
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
+  {
 
-	}
+  }
 
 }

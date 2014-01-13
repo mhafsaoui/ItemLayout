@@ -11,28 +11,13 @@
 	<packaging>bundle</packaging>
 	<name>Vaadin Addon :: Item Layout :: Addon</name>
 	<build>
-		<resources>
-			<resource>
-				<!-- This add sources files to jar from source directory. 
-					Not quite maven convention by easieast to setup this way. -->
-				<directory>src/main/java/</directory>
-				<includes>
-					<include>org/vaadin/addon/itemlayout/widgetset/**</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-
 						<Import-Package>!com.google.gwt.*,*</Import-Package>
 						
 						<!-- Package format version - do not change -->
@@ -41,20 +26,8 @@
                         <!-- Comma-separated list of widgetsets in the package -->
                         <!-- TODO figure out a way make this automatically configured -->
 						<Vaadin-Widgetsets>org.vaadin.addon.itemlayout.widgetset.ItemLayoutWidgetset</Vaadin-Widgetsets>
-
-                        <!-- Implementation-Title and Implementation-Version come from the 
-                             POM by default -->
 					</instructions>
 				</configuration>
-				<executions>
-					<execution>
-						<id>bundle-manifest</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>manifest</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -27,12 +27,12 @@ import com.vaadin.shared.AbstractFieldState;
 public class ItemLayoutState extends AbstractFieldState
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 6420700012643864994L;
-	{
-		primaryStyleName = "v-itemlayout";
-	}
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 6420700012643864994L;
+  {
+    primaryStyleName = "v-itemlayout";
+  }
 
 }

@@ -38,46 +38,46 @@ public class ItemHorizontalConnector extends AbstractItemLayoutConnector
 
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 5919752655203388362L;
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 5919752655203388362L;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ItemHorizontalState getState()
-	{
-		return (ItemHorizontalState) super.getState();
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ItemHorizontalState getState()
+  {
+    return (ItemHorizontalState) super.getState();
+  }
 
-	@Override
-	public ItemHorizontalWidget getWidget()
-	{
-		return (ItemHorizontalWidget) super.getWidget();
-	}
+  @Override
+  public ItemHorizontalWidget getWidget()
+  {
+    return (ItemHorizontalWidget) super.getWidget();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void renderedItems(final UIDL pUidl)
-	{
-		UIDL itemsData = pUidl.getChildByTagName(ItemLayoutConstant.ATTRIBUTE_ITEMS);
-		if (itemsData != null)
-		{
-			Iterator<Object> items = itemsData.getChildIterator();
-			while (items.hasNext())
-			{
-				final UIDL item = (UIDL) items.next();
-				String key = item.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY);
-				final ComponentConnector cellContent = getClient().getPaintable(item.getChildUIDL(0));
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void renderedItems(final UIDL pUidl)
+  {
+    final UIDL itemsData = pUidl.getChildByTagName(ItemLayoutConstant.ATTRIBUTE_ITEMS);
+    if (itemsData != null)
+    {
+      final Iterator<Object> items = itemsData.getChildIterator();
+      while (items.hasNext())
+      {
+        final UIDL item = (UIDL) items.next();
+        final String key = item.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY);
+        final ComponentConnector cellContent = getClient().getPaintable(item.getChildUIDL(0));
 
-				ItemSlot slot = prepareItemSlot(key, cellContent.getWidget());
-				getWidget().add(slot);
-			}
-		}
-	}
+        final ItemSlot slot = prepareItemSlot(key, cellContent.getWidget());
+        getWidget().add(slot);
+      }
+    }
+  }
 
 }

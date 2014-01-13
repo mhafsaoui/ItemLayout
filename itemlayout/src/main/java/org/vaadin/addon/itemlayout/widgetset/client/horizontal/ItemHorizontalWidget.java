@@ -8,11 +8,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 public class ItemHorizontalWidget extends HorizontalPanel
 {
 
-	public static final String CLASSNAME = "v-itemlayout-horizontal";
+  public static final String CLASSNAME = "v-itemlayout-horizontal";
 
-	public ItemHorizontalWidget()
-	{
-		super();
-		setStyleName(CLASSNAME);
-	}
+  public ItemHorizontalWidget()
+  {
+    super();
+    setStyleName(CLASSNAME);
+  }
 }

@@ -27,12 +27,12 @@ import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 public class ItemGridState extends ItemLayoutState
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 2727334984288258608L;
-	{
-		primaryStyleName = "v-itemlayout-grid";
-	}
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 2727334984288258608L;
+  {
+    primaryStyleName = "v-itemlayout-grid";
+  }
 
 }

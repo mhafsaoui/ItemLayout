@@ -8,11 +8,11 @@ package org.vaadin.addon.itemlayout.event;
 public interface ItemClickListener
 {
 
-	/**
-	 * Called when a item has been clicked.
-	 * 
-	 * @param pEvent
-	 *          An event containing information about the click.
-	 */
-	void itemClick(ItemClickEvent pEvent);
+  /**
+   * Called when a item has been clicked.
+   * 
+   * @param pEvent
+   *          An event containing information about the click.
+   */
+  void itemClick(ItemClickEvent pEvent);
 };

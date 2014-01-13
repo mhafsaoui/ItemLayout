@@ -38,57 +38,57 @@ public class ItemGridConnector extends AbstractItemLayoutConnector
 
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = 5919752655203388362L;
-	private int               columns;
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = 5919752655203388362L;
+  private int               columns;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ItemGridState getState()
-	{
-		return (ItemGridState) super.getState();
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ItemGridState getState()
+  {
+    return (ItemGridState) super.getState();
+  }
 
-	@Override
-	public ItemGridWidget getWidget()
-	{
-		return (ItemGridWidget) super.getWidget();
-	}
+  @Override
+  public ItemGridWidget getWidget()
+  {
+    return (ItemGridWidget) super.getWidget();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void renderedItems(final UIDL pUidl)
-	{
-		columns = pUidl.getIntAttribute(ItemGridConstant.ATTRIBUTE_COLUMNS);
-		UIDL itemsData = pUidl.getChildByTagName(ItemLayoutConstant.ATTRIBUTE_ITEMS);
-		if (itemsData != null)
-		{
-			final int itemCount = itemsData.getChildCount();
-			final int rows = itemCount == 0 ? 0 : ((itemCount - 1) / columns) + 1;
-			getWidget().resize(rows, columns);
-			getWidget().clear(true);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void renderedItems(final UIDL pUidl)
+  {
+    columns = pUidl.getIntAttribute(ItemGridConstant.ATTRIBUTE_COLUMNS);
+    final UIDL itemsData = pUidl.getChildByTagName(ItemLayoutConstant.ATTRIBUTE_ITEMS);
+    if (itemsData != null)
+    {
+      final int itemCount = itemsData.getChildCount();
+      final int rows = itemCount == 0 ? 0 : ((itemCount - 1) / columns) + 1;
+      getWidget().resize(rows, columns);
+      getWidget().clear(true);
 
-			Iterator<Object> items = itemsData.getChildIterator();
-			int index = 0;
-			while (items.hasNext())
-			{
-				final UIDL item = (UIDL) items.next();
-				final int column = index % columns;
-				final int row = index / columns;
-				String key = item.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY);
-				final ComponentConnector cellContent = getClient().getPaintable(item.getChildUIDL(0));
+      final Iterator<Object> items = itemsData.getChildIterator();
+      int index = 0;
+      while (items.hasNext())
+      {
+        final UIDL item = (UIDL) items.next();
+        final int column = index % columns;
+        final int row = index / columns;
+        final String key = item.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY);
+        final ComponentConnector cellContent = getClient().getPaintable(item.getChildUIDL(0));
 
-				ItemSlot slot = prepareItemSlot(key, cellContent.getWidget());
-				getWidget().setWidget(row, column, slot);
-				index++;
-			}
-		}
-	}
+        final ItemSlot slot = prepareItemSlot(key, cellContent.getWidget());
+        getWidget().setWidget(row, column, slot);
+        index++;
+      }
+    }
+  }
 
 }

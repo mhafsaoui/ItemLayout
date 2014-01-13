@@ -32,65 +32,65 @@ import com.vaadin.server.PaintTarget;
 public class ItemGrid extends AbstractItemLayout
 {
 
-	/**
-	 * Serial version id
-	 */
-	private static final long serialVersionUID = -3884081463499999846L;
+  /**
+   * Serial version id
+   */
+  private static final long serialVersionUID = -3884081463499999846L;
 
-	/**
-	 * Contains the number of column
-	 */
-	private int               columns          = 3;
+  /**
+   * Contains the number of column
+   */
+  private int               columns          = 3;
 
-	public ItemGrid()
-	{
-		super();
-	}
+  public ItemGrid()
+  {
+    super();
+  }
 
-	public ItemGrid(final int columns)
-	{
-		super();
-		setColumns(columns);
-	}
+  public ItemGrid(final int columns)
+  {
+    super();
+    setColumns(columns);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ItemGridState getState()
-	{
-		return (ItemGridState) super.getState();
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ItemGridState getState()
+  {
+    return (ItemGridState) super.getState();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
-	{
-		pTarget.addAttribute(ItemGridConstant.ATTRIBUTE_COLUMNS, columns);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
+  {
+    pTarget.addAttribute(ItemGridConstant.ATTRIBUTE_COLUMNS, columns);
 
-	}
+  }
 
-	/**
-	 * Gets number of columns defined
-	 * 
-	 * @return the number of columns, by default 3
-	 */
-	private int getColumns()
-	{
-		return columns;
-	}
+  /**
+   * Gets number of columns defined
+   * 
+   * @return the number of columns, by default 3
+   */
+  private int getColumns()
+  {
+    return columns;
+  }
 
-	/**
-	 * Sets the number of column
-	 * 
-	 * @param columns
-	 */
-	public void setColumns(final int columns)
-	{
-		this.columns = columns;
-		this.markAsDirty();
-	}
+  /**
+   * Sets the number of column
+   * 
+   * @param columns
+   */
+  public void setColumns(final int columns)
+  {
+    this.columns = columns;
+    markAsDirty();
+  }
 
 }
