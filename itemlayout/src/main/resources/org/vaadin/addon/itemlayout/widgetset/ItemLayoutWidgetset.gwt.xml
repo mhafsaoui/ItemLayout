@@ -22,6 +22,7 @@
 <module>
 	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
         <stylesheet src="itemlayout.css"/>
+    <inherits name="com.google.gwt.resources.Resources" />
     <!--
      Uncomment the following to compile the widgetset for one browser only.
      This can reduce the GWT compilation time significantly when debugging.

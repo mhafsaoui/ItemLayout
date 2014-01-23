@@ -17,25 +17,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout;
+package org.vaadin.addon.itemlayout.widgetset.client.vertical;
 
-import com.vaadin.server.AbstractClientConnector;
-import com.vaadin.server.AbstractExtension;
-import com.vaadin.ui.CssLayout;
+import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 
 /**
- * @author caseryj
+ * @author Guillaume Lamirand
  */
-public class VerticalItemList extends AbstractExtension
+public class ItemVerticalState extends ItemLayoutState
 {
 
   /**
-   * 
+   * Serial version id
    */
-  private static final long serialVersionUID = 3455023273637137667L;
-
-  public static void extend(final CssLayout pLayout)
+  private static final long serialVersionUID = 7837955939274562489L;
   {
-    new VerticalItemList().extend((AbstractClientConnector) pLayout);
+    primaryStyleName = "v-itemlayout-vertical";
   }
+
 }

@@ -4,21 +4,20 @@ import com.google.gwt.user.client.ui.FocusPanel;
 
 public class ItemSlot extends FocusPanel
 {
-  public static final String CLASSNAME = "v-itemlayout-slot";
 
   public ItemSlot()
   {
     super();
-    setStyleName(CLASSNAME);
+    setStyleName(ItemLayoutConstant.CLASS_SLOT);
   }
 
   public void select()
   {
-    addStyleName("v-itemlayout-slot-selected");
+    addStyleName(ItemLayoutConstant.CLASS_SLOT_SELECTED);
   }
 
   public void unselect()
   {
-    removeStyleName("v-itemlayout-slot-selected");
+    removeStyleName(ItemLayoutConstant.CLASS_SLOT_SELECTED);
   }
 }

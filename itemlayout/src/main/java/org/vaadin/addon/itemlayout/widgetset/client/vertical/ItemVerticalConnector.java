@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
+package org.vaadin.addon.itemlayout.widgetset.client.vertical;
 
 import java.util.Iterator;
 
-import org.vaadin.addon.itemlayout.horizontal.ItemHorizontal;
+import org.vaadin.addon.itemlayout.vertical.ItemVertical;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.AbstractListLayoutConnector;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemSlot;
@@ -33,17 +33,17 @@ import com.vaadin.client.UIDL;
 import com.vaadin.shared.ui.Connect;
 
 /**
- * @author Guillaume Lamirand
+ * @author Jeremy Casery
  */
-@Connect(ItemHorizontal.class)
-public class ItemHorizontalConnector extends AbstractListLayoutConnector
+@Connect(ItemVertical.class)
+public class ItemVerticalConnector extends AbstractListLayoutConnector
 
 {
 
   /**
    * Serial version id
    */
-  private static final long serialVersionUID = 5919752655203388362L;
+  private static final long serialVersionUID = 8548319579823380003L;
 
   /**
    * {@inheritDoc}
@@ -69,8 +69,8 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
         getWidget().add(slot);
       }
     }
-    getWidget().getElemVisibleListLayout().setWidth(
-        Integer.toString(getWidget().getOffsetWidth() - (48 * 2)) + "px");
+    getWidget().getElemVisibleListLayout().setHeight(
+        Integer.toString(getWidget().getOffsetHeight() - (48 * 2)) + "px");
     initScroller();
 
   }
@@ -79,18 +79,18 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
    * {@inheritDoc}
    */
   @Override
-  public ItemHorizontalState getState()
+  public ItemVerticalState getState()
   {
-    return (ItemHorizontalState) super.getState();
+    return (ItemVerticalState) super.getState();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public ItemHorizontalWidget getWidget()
+  public ItemVerticalWidget getWidget()
   {
-    return (ItemHorizontalWidget) super.getWidget();
+    return (ItemVerticalWidget) super.getWidget();
   }
 
   /**
@@ -99,8 +99,8 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
   @Override
   protected boolean isClippedElems()
   {
-    return getElemsListLayout().getElement().getAbsoluteRight() > getElemVisibleListLayout().getElement()
-        .getAbsoluteRight();
+    return getElemsListLayout().getElement().getAbsoluteBottom() > getElemVisibleListLayout().getElement()
+        .getAbsoluteBottom();
   }
 
   /**
@@ -124,7 +124,7 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
   /**
    * Get the elements list layout
    * 
-   * @return {@link Widget} the elements layout
+   * @return {@link Widget} the elements list layout
    */
   private Widget getElemsListLayout()
   {

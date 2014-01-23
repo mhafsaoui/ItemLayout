@@ -1,6 +1,7 @@
 .v-itemlayout-slot {
 	padding: 2px 5px;
 	text-align: center;
+	border: 1px solid transparent;
 }
 
 .v-itemlayout-slot:focus {
@@ -10,4 +11,26 @@
 
 .v-itemlayout-slot-selected, .v-itemlayout-slot-selected:focus {
 	border: 1px solid blue;
+}
+
+.v-itemlayout-scroll,
+.v-itemlayout-scroll:focus {
+	outline: none;
+	border: none;
+}
+
+.v-itemlayout-scroll-visiblelist {
+	overflow: hidden !important;
+	display: block !important;
+	margin: 0;
+	border: none;
+	border-spacing: 0;
+}
+
+.v-itemlayout-slot-removed {
+	display: none !important;
+}
+
+.v-itemlayout-scroll-hidden {
+   visibility: hidden !important;
 }

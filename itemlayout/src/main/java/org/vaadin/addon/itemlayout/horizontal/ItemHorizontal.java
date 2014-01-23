@@ -19,16 +19,13 @@
  */
 package org.vaadin.addon.itemlayout.horizontal;
 
-import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
+import org.vaadin.addon.itemlayout.layout.AbstractListLayout;
 import org.vaadin.addon.itemlayout.widgetset.client.grid.ItemGridState;
-
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 
 /**
  * @author Guillaume Lamirand
  */
-public class ItemHorizontal extends AbstractItemLayout
+public class ItemHorizontal extends AbstractListLayout
 {
 
   /**
@@ -36,6 +33,9 @@ public class ItemHorizontal extends AbstractItemLayout
    */
   private static final long serialVersionUID = 5432040675249120672L;
 
+  /**
+   * Default constructor
+   */
   public ItemHorizontal()
   {
     super();
@@ -48,15 +48,6 @@ public class ItemHorizontal extends AbstractItemLayout
   public ItemGridState getState()
   {
     return (ItemGridState) super.getState();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
-  {
-
   }
 
 }

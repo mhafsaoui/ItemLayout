@@ -5,5 +5,9 @@ package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
  */
 public class ItemHorizontalConstant
 {
+  /**
+   * Define ItemHorizontal classname
+   */
+  public static final String CLASSNAME = "v-itemlayout-horizontal";
 
 }

@@ -1,66 +1,67 @@
-package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
+package org.vaadin.addon.itemlayout.widgetset.client.vertical;
 
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
 import org.vaadin.addon.itemlayout.widgetset.client.resources.ResourceBundle;
 
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Guillaume Lamirand
  */
-public class ItemHorizontalWidget extends HorizontalPanel
+public class ItemVerticalWidget extends VerticalPanel
 {
+
   /**
    * The scroll previous button image
    */
-  private final Image           scrollPrevButtonElement;
+  private final Image         scrollPrevButtonElement;
   /**
    * The scroll next button image
    */
-  private final Image           scrollNextButtonElement;
+  private final Image         scrollNextButtonElement;
   /**
    * The scroll previous panel layout
    */
-  private final FocusPanel      prevLayout;
+  private final FocusPanel    prevLayout;
   /**
    * The scroll next panel layout
    */
-  private final FocusPanel      nextLayout;
+  private final FocusPanel    nextLayout;
   /**
    * The visible elements list layout
    */
-  private final FocusPanel      elemVisibleListLayout;
+  private final FocusPanel    elemVisibleListLayout;
   /**
    * The elements list layout
    */
-  private final HorizontalPanel elemsListLayout;
+  private final VerticalPanel elemsListLayout;
 
   /**
    * Default constructor
    */
-  public ItemHorizontalWidget()
+  public ItemVerticalWidget()
   {
     super();
-    setStyleName(ItemHorizontalConstant.CLASSNAME);
+    setStyleName(ItemVerticalConstant.CLASSNAME);
     // Scroll Previous widget
     prevLayout = new FocusPanel();
     prevLayout.setStyleName(ItemLayoutConstant.CLASS_SCROLL_LAYOUT);
-    scrollPrevButtonElement = new Image(ResourceBundle.INSTANCE.horizontalPrev());
+    scrollPrevButtonElement = new Image(ResourceBundle.INSTANCE.verticalPrev());
     scrollPrevButtonElement.setStyleName(ItemLayoutConstant.CLASS_SCROLL_PREV);
     prevLayout.add(scrollPrevButtonElement);
     // Scroll Next widget
     nextLayout = new FocusPanel();
     nextLayout.setStyleName(ItemLayoutConstant.CLASS_SCROLL_LAYOUT);
-    scrollNextButtonElement = new Image(ResourceBundle.INSTANCE.horizontalNext());
+    scrollNextButtonElement = new Image(ResourceBundle.INSTANCE.verticalNext());
     scrollNextButtonElement.setStyleName(ItemLayoutConstant.CLASS_SCROLL_NEXT);
     nextLayout.add(scrollNextButtonElement);
     // Elements list layout
     elemVisibleListLayout = new FocusPanel();
     elemVisibleListLayout.setStyleName(ItemLayoutConstant.CLASS_LIST_VISIBLE);
-    elemsListLayout = new HorizontalPanel();
+    elemsListLayout = new VerticalPanel();
     elemVisibleListLayout.add(elemsListLayout);
 
     super.add(prevLayout);
@@ -87,9 +88,7 @@ public class ItemHorizontalWidget extends HorizontalPanel
   }
 
   /**
-   * Get the scroll previous layout
-   * 
-   * @return {@link FocusPanel} the prevLayout
+   * @return the prevLayout
    */
   public FocusPanel getPrevLayout()
   {
@@ -97,9 +96,7 @@ public class ItemHorizontalWidget extends HorizontalPanel
   }
 
   /**
-   * Get the scroll next layout
-   * 
-   * @return {@link FocusPanel} the nextLayout
+   * @return the nextLayout
    */
   public FocusPanel getNextLayout()
   {
@@ -107,9 +104,7 @@ public class ItemHorizontalWidget extends HorizontalPanel
   }
 
   /**
-   * Get the visible elements list layout
-   * 
-   * @return {@link FocusPanel} the elemVisibleListLayout
+   * @return the elemVisibleListLayout
    */
   public FocusPanel getElemVisibleListLayout()
   {
@@ -117,11 +112,9 @@ public class ItemHorizontalWidget extends HorizontalPanel
   }
 
   /**
-   * Get the elements list layout
-   * 
-   * @return {@link FocusPanel} the elemsListLayout
+   * @return the elemsListLayout
    */
-  public HorizontalPanel getElemsListLayout()
+  public VerticalPanel getElemsListLayout()
   {
     return elemsListLayout;
   }
