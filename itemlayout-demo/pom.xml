@@ -11,7 +11,8 @@
 
 	<artifactId>itemlayout-demo</artifactId>
 	<packaging>war</packaging>
-	<name>Vaadin Addon :: Item Layout :: Demo</name>
+	<name>Item Layout :: Demo</name>
+	<description>Vaadin Addon :: Item Layout :: Demo</description>
 	<build>
 		<plugins>
 			<plugin>
