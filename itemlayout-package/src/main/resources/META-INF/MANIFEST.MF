@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Implementation-Title: ${implementation-title}
+Implementation-Version: ${implementation-version}
+Vaadin-Addon: ${addonFullName}/${addonFullName}.jar
+Vaadin-Package-Version: ${vaadin-package-version}
+Vaadin-Widgetsets: ${vaadin-widgetsets}
