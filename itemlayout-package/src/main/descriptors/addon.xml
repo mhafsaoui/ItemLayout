@@ -27,13 +27,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>src/classes/</directory>
+			<directory>target/classes/</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
 		<fileSet>
+			<directory>..</directory>
+			<outputDirectory>${addonFullName}/</outputDirectory>
 			<includes>
-				<include>../LICENSE</include>
-				<include>../webapp</include>
+				<include>LICENSE</include>
+				<include>README.md</include>
 			</includes>
 		</fileSet>
 	</fileSets>
