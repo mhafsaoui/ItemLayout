@@ -4,60 +4,71 @@
 	<parent>
 		<groupId>org.vaadin.addon</groupId>
 		<artifactId>itemlayout-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>itemlayout</artifactId>
 	<packaging>bundle</packaging>
-	<name>Item Layout</name>
-	<description>Vaadin Addon :: Item Layout :: Addon</description>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<configuration>
-						<instructions>
-							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-							<Import-Package>!com.google.gwt.*,*</Import-Package>
+	<name>Item Layout :: Addon</name>
+	<description>This module constains the main code of the Item Layout Addon</description>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>org/vaadin/addon/itemlayout/widgetset/**/*.java</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Import-Package>!com.google.gwt.*,*</Import-Package>
 
 						<!-- Vaadin Addon Metainformation -->
-							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Version>${project.version}</Implementation-Version>
+						<Implementation-Title>${implementation-title}</Implementation-Title>
+						<Implementation-Version>${implementation-version}</Implementation-Version>
 							
 						<!-- Package format version - do not change -->
-							<Vaadin-Package-Version>1</Vaadin-Package-Version>
+						<Vaadin-Package-Version>${vaadin-package-version}</Vaadin-Package-Version>
 
                         <!-- Comma-separated list of widgetsets in the package -->
                         <!-- TODO figure out a way make this automatically configured -->
-							<Vaadin-Widgetsets>org.vaadin.addon.itemlayout.widgetset.ItemLayoutWidgetset</Vaadin-Widgetsets>
-						</instructions>
-					</configuration>
-					<executions>
-						<execution>
-							<id>bundle-manifest</id>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>manifest</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</build>
-		<dependencies>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-server</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-client-compiled</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-client</artifactId>
-			</dependency>
-		</dependencies>
+						<Vaadin-Widgetsets>${vaadin-widgetsets}</Vaadin-Widgetsets>
+					</instructions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>bundle-manifest</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>
