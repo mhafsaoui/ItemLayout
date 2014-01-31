@@ -8,11 +8,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-
 	<artifactId>itemlayout-demo</artifactId>
 	<packaging>war</packaging>
 	<name>Item Layout :: Demo</name>
-	<description>Vaadin Addon :: Item Layout :: Demo</description>
+	<description>This module constains a webapp to demonstrate Item Layout Addon</description>
 	<build>
 		<plugins>
 			<plugin>
@@ -218,13 +217,6 @@
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>itemlayout</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addon</groupId>
-			<artifactId>itemlayout</artifactId>
-			<version>${project.version}</version>
-			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<!-- OSGi dependencies -->
