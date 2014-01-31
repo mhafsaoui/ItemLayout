@@ -51,7 +51,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		
 		<!-- Vaadin Package -->
-		<implementation-title>Item Layout</implementation-title>
+		<implementation-title>ItemLayout</implementation-title>
 		<implementation-version>${project.version}</implementation-version>
 		<vaadin-package-version>1</vaadin-package-version>
 		<vaadin-widgetsets>org.vaadin.addon.itemlayout.widgetset.ItemLayoutWidgetset</vaadin-widgetsets>
