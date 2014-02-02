@@ -22,5 +22,3 @@ To achieve that three custom components are available :
         - first index to display can be specify 
 
 Each component handle single or multi-select item, to do so you just add an ItemClickHandler.
-
-USE: You have to define two dependencies in your pom, one for addon jar and one for addon source (see screenshot bellow)ies
