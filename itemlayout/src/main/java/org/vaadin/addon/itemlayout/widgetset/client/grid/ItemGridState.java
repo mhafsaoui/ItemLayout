@@ -32,7 +32,11 @@ public class ItemGridState extends ItemLayoutState
    */
   private static final long serialVersionUID = 2727334984288258608L;
   {
-    primaryStyleName = "v-itemlayout-grid";
+    primaryStyleName = ItemGridConstant.CLASSNAME;
   }
+  /**
+   * Contains the number of column, default value is 3
+   */
+  public int                columns          = 3;
 
 }

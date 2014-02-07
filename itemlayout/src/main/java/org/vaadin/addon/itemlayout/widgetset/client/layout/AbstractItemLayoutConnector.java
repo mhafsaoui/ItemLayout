@@ -1,65 +1,35 @@
 package org.vaadin.addon.itemlayout.widgetset.client.layout;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
-import com.vaadin.client.Paintable;
 import com.vaadin.client.TooltipInfo;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.ui.AbstractHasComponentsConnector;
+import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.AbstractLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.Slot;
 
 /**
  * @author Guillaume Lamirand
  */
-public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsConnector implements Paintable
+public abstract class AbstractItemLayoutConnector extends AbstractLayoutConnector
 {
 
   /**
    * Serial version id
    */
-  private static final long serialVersionUID = -3757721567173540353L;
+  private static final long           serialVersionUID = -3757721567173540353L;
 
-  public enum SelectMode
-  {
-    NONE(0), SINGLE(1), MULTI(2);
-    private final int id;
-
-    private SelectMode(final int id)
-    {
-      this.id = id;
-    }
-
-    public int getId()
-    {
-      return id;
-    }
-  }
-
-  private boolean                     hasItemClick         = false;
-  private boolean                     nullSelectionAllowed = true;
-
-  private SelectMode                  selectMode           = SelectMode.NONE;
-
-  private Set<String>                 selectedKeys         = new HashSet<String>();
-  private final Map<String, ItemSlot> slotByKey            = new HashMap<String, ItemSlot>();
+  private final Map<Object, ItemSlot> slotById         = new HashMap<Object, ItemSlot>();
 
   private ApplicationConnection       client;
 
-  private String                      paintableId;
-  /**
-   * Contains value used to send immediatly client events
-   */
-  private boolean                     immediate;
   /**
    * Flag for notifying when the selection has changed and should be sent to
    * the server
@@ -68,80 +38,51 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
 
   /*
    * (non-Javadoc)
-   * @see com.vaadin.client.Paintable#updateFromUIDL(com.vaadin.client.UIDL,
-   * com.vaadin.client.ApplicationConnection)
+   * @see
+   * com.vaadin.client.ui.AbstractComponentConnector#onStateChanged(com.vaadin
+   * .client.communication.StateChangeEvent)
    */
   @Override
-  public void updateFromUIDL(final UIDL pUidl, final ApplicationConnection pClient)
+  public void onStateChanged(final StateChangeEvent stateChangeEvent)
   {
-    // Update main properties
-    client = pClient;
-    if (!isRealUpdate(pUidl))
-    {
-      return;
-    }
-    paintableId = pUidl.getStringAttribute("id");
-    immediate = getState().immediate;
-
-    // Update selection properties
-    updateSelectionProperties(pUidl);
-    updateSelectedItems(pUidl);
-    updateItemClickHandler(pUidl);
-
-    // Update rendered items
-    slotByKey.clear();
-    renderedItems(pUidl);
+    super.onStateChanged(stateChangeEvent);
 
   }
 
-  private void updateSelectionProperties(final UIDL uidl)
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onConnectorHierarchyChange(final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent)
   {
-
-    nullSelectionAllowed = uidl.hasAttribute(ItemLayoutConstant.ATTRIBUTE_NULL_SELECTION_ALLOWED) ? uidl
-        .getBooleanAttribute(ItemLayoutConstant.ATTRIBUTE_NULL_SELECTION_ALLOWED) : true;
-
-    if (uidl.hasAttribute(ItemLayoutConstant.ATTRIBUTE_SELECTMODE))
+    slotById.clear();
+    removeAllItem();
+    final List<ComponentConnector> childComponents = getChildComponents();
+    if (childComponents != null)
     {
-      if (isReadOnly())
+      for (final ComponentConnector componentConnector : childComponents)
       {
-        selectMode = SelectMode.NONE;
+        final ItemSlot slot = prepareItemSlot(componentConnector);
+        addItemSlot(slot);
       }
-      else if (uidl.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_SELECTMODE).equals(
-          ItemLayoutConstant.ATTRIBUTE_SELECTMODE_MULTI))
-      {
-        selectMode = SelectMode.MULTI;
-      }
-      else if (uidl.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_SELECTMODE).equals(
-          ItemLayoutConstant.ATTRIBUTE_SELECTMODE_SINGLE))
-      {
-        selectMode = SelectMode.SINGLE;
-      }
-      else
-      {
-        selectMode = SelectMode.NONE;
-      }
-    }
-  }
-
-  private void updateSelectedItems(final UIDL pUidl)
-  {
-    selectedKeys.clear();
-    if (pUidl.hasVariable(ItemLayoutConstant.ATTRIBUTE_SELECTED))
-    {
-      selectedKeys = pUidl.getStringArrayVariableAsSet(ItemLayoutConstant.ATTRIBUTE_SELECTED);
-    }
-  }
-
-  private void updateItemClickHandler(final UIDL pUidl)
-  {
-    if (pUidl.hasVariable(ItemLayoutConstant.ATTRIBUTE_ITEM_CLICK_HANDLER))
-    {
-      hasItemClick = pUidl.getBooleanAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_CLICK_HANDLER);
     }
 
   }
 
-  protected abstract void renderedItems(final UIDL pUidl);
+  /**
+   * This method should remove all {@link ItemSlot} from the layout
+   */
+  protected abstract void removeAllItem();
+
+  /**
+   * This method should add item to to the layout
+   */
+  protected abstract void addItemSlot(final ItemSlot pSlot);
+
+  /**
+   * This method is called after components have been rendered and added
+   */
+  protected abstract void postItemsRendered();
 
   /**
    * Build a {@link ItemSlot} with the given widget
@@ -152,10 +93,11 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
    *          the widget to attach
    * @return {@link ItemSlot} built
    */
-  protected ItemSlot prepareItemSlot(final String pItemKey, final Widget pWidget)
+  protected ItemSlot prepareItemSlot(final ComponentConnector pConnector)
   {
+    final String itemId = getState().items.get(pConnector);
     final ItemSlot slot = new ItemSlot();
-    slot.add(pWidget);
+    slot.add(pConnector.getWidget());
     slot.addClickHandler(new ClickHandler()
     {
 
@@ -165,55 +107,56 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
       @Override
       public void onClick(final ClickEvent event)
       {
-        if (SelectMode.NONE.equals(selectMode) == false)
+        if (getState().selectable)
         {
           // This slot has been clicked and a item click handler has been setup
-          if (hasItemClick)
+          if (getState().hasItemsClick)
           {
-            client.updateVariable(paintableId, ItemLayoutConstant.ATTRIBUTE_ITEM_CLICKED_KEY, pItemKey,
-                immediate);
+            // TODO Handle this with rpc
+            // client.updateVariable(paintableId, ItemLayoutConstant.ATTRIBUTE_ITEM_CLICKED_KEY, pItemKey,
+            // immediate);
           }
           // Handle select style for the click
-          handleSelectSlot(pItemKey);
+          handleSelectSlot(itemId);
         }
       }
 
     });
-    if ((selectedKeys != null) && (SelectMode.NONE.equals(selectMode) == false)
-        && (selectedKeys.contains(pItemKey)))
+    if ((getState().selectedItems != null) && (getState().selectable)
+        && (getState().selectedItems.contains(itemId)))
     {
       slot.select();
     }
-    slotByKey.put(pItemKey, slot);
+    slotById.put(itemId, slot);
     return slot;
   }
 
   /**
    * This method will handle click event on {@link Slot}
    * 
-   * @param pItemKey
-   *          the item key associated to the slot
+   * @param pItemId
+   *          the item id associated to the slot
    */
-  private void handleSelectSlot(final String pItemKey)
+  private void handleSelectSlot(final String pItemId)
   {
-    if (selectedKeys != null)
+    if (getState().selectedItems != null)
     {
-      if (selectedKeys.size() == 0)
+      if (getState().selectedItems.isEmpty())
       {
-        selectSlot(pItemKey);
+        selectSlot(pItemId);
       }
-      else if ((((selectedKeys.size() == 1) && (nullSelectionAllowed)) || (selectedKeys.size() != 1))
-          && (selectedKeys.contains(pItemKey)))
+      else if ((((getState().selectedItems.size() == 1) && (getState().nullSelectionAllowed)) || (getState().selectedItems
+          .size() != 1)) && (getState().selectedItems.contains(pItemId)))
       {
-        unselectSlot(pItemKey);
+        unselectSlot(pItemId);
       }
-      else if (selectedKeys.contains(pItemKey) == false)
+      else if (getState().selectedItems.contains(pItemId) == false)
       {
-        if (SelectMode.SINGLE.equals(selectMode))
+        if ((getState().selectable) && (getState().multiSelectable == false))
         {
           unselectAll();
         }
-        selectSlot(pItemKey);
+        selectSlot(pItemId);
       }
     }
 
@@ -224,14 +167,14 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
    */
   private void unselectAll()
   {
-    for (final String selectKey : selectedKeys)
+    for (final Object selectItemId : getState().selectedItems)
     {
-      if (slotByKey.containsKey(selectKey))
+      if (slotById.containsKey(selectItemId))
       {
-        slotByKey.get(selectKey).unselect();
+        slotById.get(selectItemId).unselect();
       }
     }
-    selectedKeys.clear();
+    getState().selectedItems.clear();
     selectionChanged = true;
   }
 
@@ -241,13 +184,13 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
    * @param pItemKey
    *          the item key
    */
-  private void unselectSlot(final String pItemKey)
+  private void unselectSlot(final Object pItemKey)
   {
-    if (slotByKey.containsKey(pItemKey))
+    if (slotById.containsKey(pItemKey))
     {
-      slotByKey.get(pItemKey).unselect();
+      slotById.get(pItemKey).unselect();
     }
-    selectedKeys.remove(pItemKey);
+    getState().selectedItems.remove(pItemKey);
     selectionChanged = true;
   }
 
@@ -259,10 +202,10 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
    */
   private void selectSlot(final String pItemKey)
   {
-    if (slotByKey.containsKey(pItemKey))
+    if (slotById.containsKey(pItemKey))
     {
-      selectedKeys.add(pItemKey);
-      slotByKey.get(pItemKey).select();
+      getState().selectedItems.add(pItemKey);
+      slotById.get(pItemKey).select();
       selectionChanged = true;
     }
   }
@@ -280,8 +223,9 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
       selectionChanged = false;
 
       // Send the selected items
-      client.updateVariable(paintableId, ItemLayoutConstant.ATTRIBUTE_SELECTED,
-          selectedKeys.toArray(new String[selectedKeys.size()]), immediate);
+      // TODO Handle this with rpc
+      // client.updateVariable(paintableId, ItemLayoutConstant.ATTRIBUTE_SELECTED,
+      // selectedKeys.toArray(new String[selectedKeys.size()]), immediate);
     }
   }
 
@@ -292,15 +236,6 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
   public ItemLayoutState getState()
   {
     return (ItemLayoutState) super.getState();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isReadOnly()
-  {
-    return super.isReadOnly() || getState().propertyReadOnly;
   }
 
   /*
@@ -351,29 +286,11 @@ public abstract class AbstractItemLayoutConnector extends AbstractHasComponentsC
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void onConnectorHierarchyChange(final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent)
-  {
-    // This cannot be used at this moment because of legacy compatibily
-
-  }
-
-  /**
    * @return the client
    */
   public ApplicationConnection getClient()
   {
     return client;
-  }
-
-  /**
-   * @return the paintableId
-   */
-  public String getPaintableId()
-  {
-    return paintableId;
   }
 
 }

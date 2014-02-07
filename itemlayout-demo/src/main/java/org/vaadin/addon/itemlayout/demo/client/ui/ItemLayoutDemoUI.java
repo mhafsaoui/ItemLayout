@@ -53,12 +53,12 @@ public class ItemLayoutDemoUI extends UI
     // Main layout
     final VerticalLayout layout = new VerticalLayout();
     layout.addComponent(new Label("Demo for ItemLayout addon"));
-    final Component itemGrid = initItemGridExamples();
-    layout.addComponent(itemGrid);
+    // final Component itemGrid = initItemGridExamples();
+    // layout.addComponent(itemGrid);
     final Component itemHorizontal = initItemHorizontalExamples();
     layout.addComponent(itemHorizontal);
-    final Component itemVertical = initItemVerticalExamples();
-    layout.addComponent(itemVertical);
+    // final Component itemVertical = initItemVerticalExamples();
+    // layout.addComponent(itemVertical);
 
     setContent(layout);
   }
@@ -155,6 +155,7 @@ public class ItemLayoutDemoUI extends UI
     example.addComponent(noSelectionLayout);
     noSelectionLayout.addComponent(new Label("No selection"));
     final ItemHorizontal noSelection = buildDefaultItemHorizontal();
+    noSelection.setWidth(100, Unit.PERCENTAGE);
     noSelectionLayout.addComponent(noSelection);
 
     // Single selection example
@@ -165,16 +166,16 @@ public class ItemLayoutDemoUI extends UI
     final ItemHorizontal singleSelection = buildDefaultItemHorizontal();
     singleSelection.setSelectable(true);
     singleSelectionLayout.addComponent(singleSelection);
-
-    // Multi selection example
-    final VerticalLayout multiSelectionLayout = new VerticalLayout();
-    multiSelectionLayout.setMargin(true);
-    example.addComponent(multiSelectionLayout);
-    multiSelectionLayout.addComponent(new Label("Multi selection"));
-    final ItemHorizontal multiSelection = buildDefaultItemHorizontal();
-    multiSelection.setSelectable(true);
-    multiSelection.setMultiSelect(true);
-    multiSelectionLayout.addComponent(multiSelection);
+    //
+    // // Multi selection example
+    // final VerticalLayout multiSelectionLayout = new VerticalLayout();
+    // multiSelectionLayout.setMargin(true);
+    // example.addComponent(multiSelectionLayout);
+    // multiSelectionLayout.addComponent(new Label("Multi selection"));
+    // final ItemHorizontal multiSelection = buildDefaultItemHorizontal();
+    // multiSelection.setSelectable(true);
+    // multiSelection.setMultiSelect(true);
+    // multiSelectionLayout.addComponent(multiSelection);
     return example;
   }
 

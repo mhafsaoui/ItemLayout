@@ -19,8 +19,8 @@
  */
 package org.vaadin.addon.itemlayout.horizontal;
 
-import org.vaadin.addon.itemlayout.layout.AbstractListLayout;
-import org.vaadin.addon.itemlayout.widgetset.client.grid.ItemGridState;
+import org.vaadin.addon.itemlayout.list.AbstractListLayout;
+import org.vaadin.addon.itemlayout.widgetset.client.horizontal.ItemHorizontalState;
 
 /**
  * @author Guillaume Lamirand
@@ -45,9 +45,9 @@ public class ItemHorizontal extends AbstractListLayout
    * {@inheritDoc}
    */
   @Override
-  public ItemGridState getState()
+  public ItemHorizontalState getState()
   {
-    return (ItemGridState) super.getState();
+    return (ItemHorizontalState) super.getState();
   }
 
 }

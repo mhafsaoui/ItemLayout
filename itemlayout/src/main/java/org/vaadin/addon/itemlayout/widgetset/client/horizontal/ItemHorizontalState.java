@@ -19,12 +19,12 @@
  */
 package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
 
-import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
+import org.vaadin.addon.itemlayout.widgetset.client.list.ItemListState;
 
 /**
  * @author Guillaume Lamirand
  */
-public class ItemHorizontalState extends ItemLayoutState
+public class ItemHorizontalState extends ItemListState
 {
 
   /**
@@ -32,7 +32,7 @@ public class ItemHorizontalState extends ItemLayoutState
    */
   private static final long serialVersionUID = 2727334984288258608L;
   {
-    primaryStyleName = "v-itemlayout-horizontal";
+    primaryStyleName = ItemHorizontalConstant.CLASSNAME;
   }
 
 }

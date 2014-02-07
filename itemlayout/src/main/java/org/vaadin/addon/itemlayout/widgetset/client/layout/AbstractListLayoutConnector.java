@@ -19,6 +19,8 @@
  */
 package org.vaadin.addon.itemlayout.widgetset.client.layout;
 
+import org.vaadin.addon.itemlayout.widgetset.client.list.ItemListState;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
@@ -26,7 +28,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 
 /**
  * @author Jeremy Casery
@@ -59,15 +61,29 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    * {@inheritDoc}
    */
   @Override
-  protected abstract void renderedItems(final UIDL pUidl);
+  public ItemListState getState()
+  {
+    return (ItemListState) super.getState();
+  }
 
   /**
-   * Initialize the scrolling state, scroll to scrollerIndex, add event listener and update prev/next button
-   * visibility if needed
+   * {@inheritDoc}
    */
-  protected void initScroller()
+  @Override
+  public void onStateChanged(final StateChangeEvent pStateChangeEvent)
   {
+    super.onStateChanged(pStateChangeEvent);
+    setScrollerIndex(getState().scrollerIndex);
+    setScrollInterval(getState().scrollInterval);
     hideDefaultScrolledElems();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void postItemsRendered()
+  {
     addMouseWheelListener();
     updateScrollButtonsVisibility();
   }
@@ -75,7 +91,7 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   /**
    * Scroll to scrollerIndex, i.e. hide elements with index minor to scrollerIndex
    */
-  private void hideDefaultScrolledElems()
+  protected void hideDefaultScrolledElems()
   {
     if (scrollerIndex > 0)
     {

@@ -2,7 +2,7 @@
  * NovaForge(TM) is a web-based forge offering a Collaborative Development and 
  * Project Management Environment.
  *
- * Copyright (C) 2007-2013  BULL SAS
+ * Copyright (C) 2007-2014  BULL SAS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,22 +17,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.widgetset.client.vertical;
+package org.vaadin.addon.itemlayout.layout.model;
 
-import org.vaadin.addon.itemlayout.widgetset.client.list.ItemListState;
+import java.io.Serializable;
+import java.util.EventObject;
+
+import com.vaadin.data.Container;
 
 /**
- * @author Guillaume Lamirand
+ * Implementation of property set change event.
  */
-public class ItemVerticalState extends ItemListState
+public class DefaultPropertySetChangeEvent extends EventObject implements Container.PropertySetChangeEvent,
+    Serializable
 {
 
-  /**
-   * Serial version id
-   */
-  private static final long serialVersionUID = 7837955939274562489L;
+  public DefaultPropertySetChangeEvent(final Container source)
   {
-    primaryStyleName = ItemVerticalConstant.CLASSNAME;
+    super(source);
+  }
+
+  /**
+   * Retrieves the Container whose contents have been modified.
+   * 
+   * @see com.vaadin.data.Container.PropertySetChangeEvent#getContainer()
+   */
+  @Override
+  public Container getContainer()
+  {
+    return (Container) getSource();
   }
 
 }

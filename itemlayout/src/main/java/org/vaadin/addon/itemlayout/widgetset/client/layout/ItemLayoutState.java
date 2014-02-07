@@ -19,20 +19,52 @@
  */
 package org.vaadin.addon.itemlayout.widgetset.client.layout;
 
-import com.vaadin.shared.AbstractFieldState;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
+
+import com.vaadin.shared.Connector;
+import com.vaadin.shared.ui.AbstractLayoutState;
 
 /**
  * @author Guillaume Lamirand
  */
-public class ItemLayoutState extends AbstractFieldState
+public class ItemLayoutState extends AbstractLayoutState
 {
 
   /**
    * Serial version id
    */
-  private static final long serialVersionUID = 6420700012643864994L;
+  private static final long     serialVersionUID     = 6420700012643864994L;
   {
     primaryStyleName = "v-itemlayout";
   }
 
+  /**
+   * Contains {@link Connector} draw according container items and {@link AbstractItemLayout#generator}
+   */
+  public Map<Connector, String> items                = new HashMap<Connector, String>();
+  /**
+   * Selected items
+   */
+  public Set<String>            selectedItems        = new HashSet<String>();
+  /**
+   * Allow user to select at least one item
+   */
+  public boolean                selectable           = true;
+  /**
+   * Allow user to select many items
+   */
+  public boolean                multiSelectable      = true;
+  /**
+   * Allow user to select nothing
+   */
+  public boolean                nullSelectionAllowed = true;
+  /**
+   * Defined if at least one listenner has been setted
+   */
+  public boolean                hasItemsClick        = false;
 }

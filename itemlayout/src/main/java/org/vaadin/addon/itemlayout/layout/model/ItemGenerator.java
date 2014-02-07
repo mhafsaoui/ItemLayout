@@ -1,6 +1,8 @@
-package org.vaadin.addon.itemlayout.layout;
+package org.vaadin.addon.itemlayout.layout.model;
 
 import java.io.Serializable;
+
+import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Component;

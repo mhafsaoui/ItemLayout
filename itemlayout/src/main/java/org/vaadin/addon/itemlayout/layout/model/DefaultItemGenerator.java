@@ -1,4 +1,6 @@
-package org.vaadin.addon.itemlayout.layout;
+package org.vaadin.addon.itemlayout.layout.model;
+
+import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;

@@ -17,64 +17,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.grid;
+package org.vaadin.addon.itemlayout.widgetset.client.list;
 
-import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
-import org.vaadin.addon.itemlayout.widgetset.client.grid.ItemGridState;
+import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 
 /**
  * @author Guillaume Lamirand
  */
-public class ItemGrid extends AbstractItemLayout
+public class ItemListState extends ItemLayoutState
 {
 
   /**
    * Serial version id
    */
-  private static final long serialVersionUID = -3884081463499999846L;
-
-  public ItemGrid()
+  private static final long serialVersionUID = 2727334984288258608L;
   {
-    super();
+    primaryStyleName = "v-itemlayout-list";
   }
-
-  public ItemGrid(final int columns)
-  {
-    super();
-    setColumns(columns);
-  }
-
   /**
-   * {@inheritDoc}
+   * Scroll interval, default value is 1
    */
-  @Override
-  public ItemGridState getState()
-  {
-    return (ItemGridState) super.getState();
-  }
-
+  public int                scrollInterval   = 1;
   /**
-   * Gets number of columns defined
-   * 
-   * @return the number of columns, by default 3
+   * Scroller index, default value is 0
    */
-  private int getColumns()
-  {
-    return getState().columns;
-  }
-
-  /**
-   * Sets the number of column
-   * 
-   * @param pColumns
-   */
-  public void setColumns(final int pColumns)
-  {
-    if (getState().columns != pColumns)
-    {
-      getState().columns = pColumns;
-      markAsDirty();
-    }
-  }
+  public int                scrollerIndex    = 0;
 
 }

@@ -2,10 +2,9 @@ package org.vaadin.addon.itemlayout.layout;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +13,20 @@ import java.util.Set;
 
 import org.vaadin.addon.itemlayout.event.ItemClickEvent;
 import org.vaadin.addon.itemlayout.event.ItemClickListener;
-import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
+import org.vaadin.addon.itemlayout.layout.model.DefaultItemGenerator;
+import org.vaadin.addon.itemlayout.layout.model.DefaultItemSetChangeEvent;
+import org.vaadin.addon.itemlayout.layout.model.DefaultPropertySetChangeEvent;
+import org.vaadin.addon.itemlayout.layout.model.ItemGenerator;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.server.LegacyCommunicationManager;
-import com.vaadin.server.LegacyPaint;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.shared.ui.table.TableConstants;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractSingleComponentContainer;
+import com.vaadin.data.Property.ValueChangeNotifier;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.shared.Connector;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HasComponents;
 
 /**
  * Defines a layout which generate {@link Component} based on {@link Container} and its {@link Item}
@@ -39,45 +36,47 @@ import com.vaadin.ui.HasComponents;
  * 
  * @author Guillaume Lamirand
  */
-public abstract class AbstractItemLayout extends AbstractSelect implements HasComponents
+public abstract class AbstractItemLayout extends AbstractLayout implements Container, Container.Viewer,
+    Container.PropertySetChangeListener, Container.PropertySetChangeNotifier,
+    Container.ItemSetChangeNotifier, Container.ItemSetChangeListener, Property.ValueChangeListener
 {
 
   /**
    * Serial version id
    */
-  private static final long             serialVersionUID   = -5457410734160515489L;
+  private static final long                        serialVersionUID          = -5457410734160515489L;
 
+  /**
+   * List of property set change event listeners.
+   */
+  private Set<Container.PropertySetChangeListener> propertySetEventListeners = null;
+
+  /**
+   * List of item set change event listeners.
+   */
+  private Set<Container.ItemSetChangeListener>     itemSetEventListeners     = null;
   /**
    * Contains the registered listened properties, so we can do proper cleanup to free
    * memory.
    */
-  private final Set<Property<?>>        listenedProperties = new HashSet<Property<?>>();
-  /**
-   * Contains {@link Component} draw according container items and {@link AbstractItemLayout#generator}
-   */
-  private Map<Object, Component>        itemsComponent     = new LinkedHashMap<Object, Component>();
+  private final Set<Property<?>>                   listenedProperties        = new HashSet<Property<?>>();
   /**
    * Contains the {@link ItemGenerator} used to handle item rendered
    */
-  private ItemGenerator                 generator;
+  private ItemGenerator                            generator;
+
   /**
-   * Used when layout is currently being painted
+   * Select options.
    */
-  private boolean                       isBeingPainted;
-  /**
-   * Set to true if the client-side should be informed that the key mapper has
-   * been reset so it can avoid sending back references to keys that are no
-   * longer present.
-   */
-  private boolean                       keyMapperReset;
-  /**
-   * Defined if item component is selectable
-   */
-  private boolean                       selectable;
+  protected Container                              items;
   /**
    * Contains list of listener for {@link org.vaadin.addon.itemlayout.event.ItemClickEvent}
    */
-  private final List<ItemClickListener> clickListeners     = new ArrayList<ItemClickListener>();
+  private final List<ItemClickListener>            clickListeners            = new ArrayList<ItemClickListener>();
+  /**
+   * Custom layout slots containing the components.
+   */
+  protected List<Component>                        components                = new LinkedList<Component>();
 
   /**
    * Default constructor.
@@ -88,6 +87,7 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   public AbstractItemLayout()
   {
     super();
+    setContainerDataSource(new IndexedContainer());
     generator = new DefaultItemGenerator();
   }
 
@@ -123,18 +123,10 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
    * 
    * @see com.vaadin.data.Property.ValueChangeListener#valueChange(Property.ValueChangeEvent)
    */
-
   @Override
   public void valueChange(final Property.ValueChangeEvent event)
   {
-    if ((event.getProperty() == this) || (event.getProperty() == getPropertyDataSource()))
-    {
-      super.valueChange(event);
-    }
-    else
-    {
-      updateItemComponents();
-    }
+    updateItemComponents();
     markAsDirty();
   }
 
@@ -161,136 +153,32 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   }
 
   /**
-   * Invoked when the value of a variable has changed.
-   * 
-   * @see com.vaadin.ui.Select#changeVariables(java.lang.Object, java.util.Map)
-   */
-  @Override
-  public void changeVariables(final Object pSource, final Map<String, Object> pVariables)
-  {
-    // Item click event
-    if (pVariables.containsKey(ItemLayoutConstant.ATTRIBUTE_ITEM_CLICKED_KEY))
-    {
-      final String key = (String) pVariables.get(ItemLayoutConstant.ATTRIBUTE_ITEM_CLICKED_KEY);
-      final Object itemId = itemIdMapper.get(key);
-      handleClickEvent(itemId);
-    }
-
-    super.changeVariables(pSource, pVariables);
-  }
-
-  /*
    * {@inheritDoc}
-   * (non-Javadoc)
-   * @see com.vaadin.ui.AbstractSelect#paintContent(com.vaadin.
-   * terminal.PaintTarget)
    */
   @Override
-  public void paintContent(final PaintTarget target) throws PaintException
+  public void beforeClientResponse(final boolean initial)
   {
-    isBeingPainted = true;
-    try
-    {
-      doPaintContent(target);
-    }
-    finally
-    {
-      isBeingPainted = false;
-    }
+    super.beforeClientResponse(initial);
+    getState().hasItemsClick = !clickListeners.isEmpty();
+
   }
 
-  private void doPaintContent(final PaintTarget pTarget) throws PaintException
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int getComponentCount()
   {
-    paintLayoutAttributes(pTarget);
-    paintSelectMode(pTarget);
-    paintItemClickHandler(pTarget);
-    paintItems(pTarget);
-    if (keyMapperReset)
-    {
-      keyMapperReset = false;
-      pTarget.addAttribute(TableConstants.ATTRIBUTE_KEY_MAPPER_RESET, true);
-    }
+    return components.size();
   }
 
-  protected abstract void paintLayoutAttributes(final PaintTarget target) throws PaintException;
-
-  private void paintSelectMode(final PaintTarget target) throws PaintException
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Iterator<Component> iterator()
   {
-    if (isSelectable())
-    {
-      target.addAttribute(ItemLayoutConstant.ATTRIBUTE_SELECTMODE,
-          (isMultiSelect() ? ItemLayoutConstant.ATTRIBUTE_SELECTMODE_MULTI
-              : ItemLayoutConstant.ATTRIBUTE_SELECTMODE_SINGLE));
-    }
-    else
-    {
-      target.addAttribute(ItemLayoutConstant.ATTRIBUTE_SELECTMODE,
-          ItemLayoutConstant.ATTRIBUTE_SELECTMODE_NONE);
-    }
-    if (!isNullSelectionAllowed())
-    {
-      target.addAttribute(ItemLayoutConstant.ATTRIBUTE_NULL_SELECTION_ALLOWED, false);
-    }
-
-    // selection support
-    // The select variable is only enabled if selectable
-    if (isSelectable())
-    {
-      target.addVariable(this, ItemLayoutConstant.ATTRIBUTE_SELECTED, findSelectedKeys());
-    }
-  }
-
-  private void paintItemClickHandler(final PaintTarget pTarget) throws PaintException
-  {
-    pTarget.addVariable(this, ItemLayoutConstant.ATTRIBUTE_ITEM_CLICK_HANDLER, !clickListeners.isEmpty());
-  }
-
-  private String[] findSelectedKeys()
-  {
-    final LinkedList<String> selectedKeys = new LinkedList<String>();
-    if (isMultiSelect())
-    {
-      final HashSet<?> sel = new HashSet<Object>((Set<?>) getValue());
-      final Collection<?> vids = getVisibleItemIds();
-      for (final Object id : vids)
-      {
-        if (sel.contains(id))
-        {
-          selectedKeys.add(itemIdMapper.key(id));
-        }
-      }
-    }
-    else
-    {
-      Object value = getValue();
-      if (value == null)
-      {
-        value = getNullSelectionItemId();
-      }
-      if (value != null)
-      {
-        selectedKeys.add(itemIdMapper.key(value));
-      }
-    }
-    return selectedKeys.toArray(new String[selectedKeys.size()]);
-  }
-
-  @SuppressWarnings("deprecation")
-  private void paintItems(final PaintTarget target) throws PaintException
-  {
-    target.startTag(ItemLayoutConstant.ATTRIBUTE_ITEMS);
-    for (final Entry<Object, Component> entry : itemsComponent.entrySet())
-    {
-      if (LegacyCommunicationManager.isComponentVisibleToClient(entry.getValue()))
-      {
-        target.startTag(ItemLayoutConstant.ATTRIBUTE_ITEM);
-        target.addAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY, itemIdMapper.key(entry.getKey()));
-        LegacyPaint.paint(entry.getValue(), target);
-        target.endTag(ItemLayoutConstant.ATTRIBUTE_ITEM);
-      }
-    }
-    target.endTag(ItemLayoutConstant.ATTRIBUTE_ITEMS);
-
+    return components.iterator();
   }
 
   /**
@@ -299,16 +187,8 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   @Override
   public void containerItemSetChange(final Container.ItemSetChangeEvent event)
   {
-    if (isBeingPainted)
-    {
-      return;
-    }
-
-    super.containerItemSetChange(event);
-
-    // super method clears the key map, must inform client about this to
-    // avoid getting invalid keys back (#8584)
-    keyMapperReset = true;
+    // Notify all listeners
+    fireItemSetChange();
 
     updateItemComponents();
   }
@@ -319,11 +199,7 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   @Override
   public void containerPropertySetChange(final Container.PropertySetChangeEvent event)
   {
-    if (isBeingPainted)
-    {
-      return;
-    }
-    super.containerPropertySetChange(event);
+    firePropertySetChange();
     updateItemComponents();
 
   }
@@ -337,8 +213,9 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
 
     // Keep old reference
     final Set<Property<?>> oldListenedProperties = listenedProperties;
-    final Set<Component> oldVisibleComponents = new HashSet<Component>(itemsComponent.values());
-    itemsComponent = new HashMap<Object, Component>();
+    final Set<Component> oldVisibleComponents = new HashSet<Component>(components);
+    getState().items.clear();
+    components.clear();
 
     // Atatch the new ones
     for (final Object itemId : getItemIds())
@@ -352,36 +229,13 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
     markAsDirty();
   }
 
-  protected void generateItemComponent(final Object itemId)
+  protected void generateItemComponent(final Object pItemId)
   {
-    final Component c = generator.generateItem(this, itemId);
-    registerComponent(itemId, c);
-    listenProperties(itemId);
-  }
-
-  protected void registerComponent(final Object pItemId, final Component pComponent)
-  {
-    if (pComponent instanceof ComponentContainer)
-    {
-      // Make sure we're not adding the component inside it's own content
-      for (Component parent = this; parent != null; parent = parent.getParent())
-      {
-        if (parent == pComponent)
-        {
-          throw new IllegalArgumentException("Component cannot be added inside it's own content");
-        }
-      }
-    }
-
-    if (pComponent.getParent() != null)
-    {
-      // If the component already has a parent, try to remove it
-      AbstractSingleComponentContainer.removeFromParent(pComponent);
-    }
-
-    pComponent.setParent(this);
-    fireEvent(new ComponentAttachEvent(this, pComponent));
-    itemsComponent.put(pItemId, pComponent);
+    final Component c = generator.generateItem(this, pItemId);
+    addComponent(c);
+    components.add(c);
+    getState().items.put(c, pItemId.toString());
+    listenProperties(pItemId);
   }
 
   private void listenProperties(final Object pItemId)
@@ -412,12 +266,12 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   {
     if (pOldVisibleComponents != null)
     {
-      final Set<Component> visibleComponents = new HashSet<Component>(itemsComponent.values());
+      final Set<Component> visibleComponents = new HashSet<Component>();
       for (final Component c : pOldVisibleComponents)
       {
         if (!visibleComponents.contains(c))
         {
-          unregisterComponent(c);
+          super.removeComponent(c);
         }
       }
     }
@@ -435,17 +289,11 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
     }
   }
 
-  protected void unregisterComponent(final Component c)
-  {
-    if (c.getParent() == this)
-    {
-      c.setParent(null);
-      fireEvent(new ComponentDetachEvent(this, c));
-    }
-  }
-
   /**
    * Adds an Item click listener for the object.
+   * 
+   * @param pListener
+   *          the listener to add
    */
   public void addItemClickListener(final ItemClickListener pListener)
   {
@@ -454,6 +302,9 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
 
   /**
    * Removes an Item click listener for the object.
+   * 
+   * @param pListener
+   *          the listener to remove
    */
   public void removeItemClickListener(final ItemClickListener pListener)
   {
@@ -491,13 +342,12 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
       final boolean isAlreadySelected = isSelected(pItemId);
       if (isAlreadySelected)
       {
-        unselect(pItemId);
+        unselectitem(pItemId, true);
       }
       else
       {
-        select(pItemId);
+        selectItem(pItemId, true);
       }
-      fireItemClick(new ItemClickEvent(pItemId, !isAlreadySelected));
 
     }
   }
@@ -512,7 +362,7 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
    */
   public boolean isSelectable()
   {
-    return selectable;
+    return getState().selectable;
   }
 
   /**
@@ -526,10 +376,152 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
    */
   public void setSelectable(final boolean pSelectable)
   {
-    if (selectable != pSelectable)
+    if (getState().selectable != pSelectable)
     {
-      selectable = pSelectable;
+      getState().selectable = pSelectable;
       markAsDirty();
+    }
+  }
+
+  /**
+   * Is the select in multiselect mode? In multiselect mode
+   * 
+   * @return the Value of property multiSelect.
+   */
+  public boolean isMultiSelectable()
+  {
+    return getState().multiSelectable;
+  }
+
+  /**
+   * Sets the multiselect mode. Setting multiselect mode false may lose
+   * selection information: if selected items set contains one or more
+   * selected items, only one of the selected items is kept as selected.
+   * Subclasses of AbstractSelect can choose not to support changing the
+   * multiselect mode, and may throw {@link UnsupportedOperationException}.
+   * 
+   * @param pMultiSelect
+   *          the New value of property multiSelect.
+   */
+  public void setMultiSelect(final boolean pMultiSelect)
+  {
+    if (getState().multiSelectable != pMultiSelect)
+    {
+      // Selection before mode change
+      getState().multiSelectable = pMultiSelect;
+      markAsDirty();
+    }
+  }
+
+  /**
+   * Tests if an item is selected.
+   * 
+   * @param pItemId
+   *          the Id the of the item to be tested.
+   * @return <code>true</code> if item is selected
+   */
+  public boolean isSelected(final Object pItemId)
+  {
+    boolean isSelected = false;
+    if ((isSelectable()) && (pItemId != null) && (getState().selectedItems.contains(pItemId)))
+    {
+      isSelected = true;
+    }
+    return isSelected;
+  }
+
+  /**
+   * Allow or disallow empty selection by the user. If the select is in
+   * single-select mode, you can make an item represent the empty selection by
+   * calling <code>setNullSelectionItemId()</code>. This way you can for
+   * instance set an icon and caption for the null selection item.
+   * 
+   * @param pNullSelectionAllowed
+   *          whether or not to allow empty selection
+   */
+  public void setNullSelectionAllowed(final boolean pNullSelectionAllowed)
+  {
+    if (getState().nullSelectionAllowed != pNullSelectionAllowed)
+    {
+      getState().nullSelectionAllowed = pNullSelectionAllowed;
+      markAsDirty();
+    }
+  }
+
+  /**
+   * Checks if null empty selection is allowed by the user.
+   * 
+   * @return whether or not empty selection is allowed
+   * @see #setNullSelectionAllowed(boolean)
+   */
+  public boolean isNullSelectionAllowed()
+  {
+    return getState().nullSelectionAllowed;
+  }
+
+  public void clearSelectedItems()
+  {
+    if (getState().selectedItems == null)
+    {
+      getState().selectedItems = new HashSet<String>();
+    }
+    else
+    {
+      getState().selectedItems.clear();
+    }
+  }
+
+  public void selectItem(final Object pItemId)
+  {
+    selectItem(pItemId, false);
+  }
+
+  public void selectItem(final Object pItemId, final boolean pFireEvent)
+  {
+    if ((pItemId != null) && (isSelected(pItemId) == false))
+    {
+      if (isMultiSelectable() == false)
+      {
+        getState().selectedItems.clear();
+      }
+      getState().selectedItems.add(pItemId.toString());
+      if (pFireEvent)
+      {
+        fireItemClick(new ItemClickEvent(pItemId, true));
+      }
+    }
+  }
+
+  /**
+   * Unselects an item.
+   * 
+   * @param pItemId
+   *          the identifier of the Item to be unselected.
+   * @see #getNullSelectionItemId()
+   * @see #setNullSelectionItemId(Object)
+   */
+  public void unselectitem(final Object pItemId)
+  {
+    unselectitem(pItemId, false);
+  }
+
+  /**
+   * Unselects an item.
+   * 
+   * @param pItemId
+   *          the identifier of the Item to be unselected.
+   * @param pFireEvent
+   *          true to fire a {@link ItemClickEvent}
+   */
+  public void unselectitem(final Object pItemId, final boolean pFireEvent)
+  {
+    if ((pItemId != null) && (isSelected(pItemId)))
+    {
+      getState().selectedItems.remove(pItemId);
+      if (pFireEvent)
+      {
+        fireItemClick(new ItemClickEvent(pItemId, false));
+      }
     }
   }
 
@@ -543,32 +535,33 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Iterator<Component> iterator()
-  {
-    return itemsComponent.values().iterator();
-  }
-
-  /**
    * Returns item identifiers of the items which are currently rendered on the
    * client.
    * 
+   * @return items rendered
    * @see com.vaadin.ui.Select#getVisibleItemIds()
    */
-  @Override
-  public Collection<?> getVisibleItemIds()
+  public List<Object> getVisibleItemIds()
   {
+    final List<Object> visible = new LinkedList<Object>();
 
-    final LinkedList<Object> visible = new LinkedList<Object>();
-
-    final Collection<?> itemIds = super.getItemIds();
+    final Collection<?> itemIds = getItemIds();
+    final Map<Connector, String> item = getState().items;
     for (final Object itemId : itemIds)
     {
-      if (((itemsComponent.containsKey(itemId)) && (itemsComponent.get(itemId).isVisible())))
+      final Set<Entry<Connector, String>> entrySet = item.entrySet();
+      for (final Entry<Connector, String> entry : entrySet)
       {
-        visible.add(itemId);
+        final Connector key = entry.getKey();
+        if (key instanceof Component)
+        {
+          final Component component = (Component) key;
+          if ((entry.getValue() != null) && (entry.getValue().equals(itemId)) && (component.isVisible()))
+          {
+            visible.add(itemId);
+          }
+        }
+
       }
     }
     return visible;
@@ -590,20 +583,370 @@ public abstract class AbstractItemLayout extends AbstractSelect implements HasCo
   }
 
   /**
-   * Adding new items is not supported.
-   * 
-   * @throws UnsupportedOperationException
-   *           if set to true.
-   * @see com.vaadin.ui.Select#setNewItemsAllowed(boolean)
+   * {@inheritDoc}
    */
-
   @Override
-  public void setNewItemsAllowed(final boolean allowNewOptions) throws UnsupportedOperationException
+  public void replaceComponent(final Component pOldComponent, final Component pNewComponent)
   {
-    if (allowNewOptions)
+    throw new IllegalAccessError("Unsupported method");
+
+  }
+
+  /**
+   * Fires the item set change event.
+   */
+  protected void fireItemSetChange()
+  {
+    if ((itemSetEventListeners != null) && !itemSetEventListeners.isEmpty())
     {
-      throw new UnsupportedOperationException();
+      final Container.ItemSetChangeEvent event = new DefaultItemSetChangeEvent(this);
+      final Object[] listeners = itemSetEventListeners.toArray();
+      for (final Object listener : listeners)
+      {
+        ((Container.ItemSetChangeListener) listener).containerItemSetChange(event);
+      }
     }
+    markAsDirty();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated
+  public void addListener(final ItemSetChangeListener pListener)
+  {
+    addItemSetChangeListener(pListener);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addItemSetChangeListener(final ItemSetChangeListener pListener)
+  {
+    if (itemSetEventListeners == null)
+    {
+      itemSetEventListeners = new LinkedHashSet<Container.ItemSetChangeListener>();
+    }
+    itemSetEventListeners.add(pListener);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated
+  public void removeListener(final ItemSetChangeListener pListener)
+  {
+    removeItemSetChangeListener(pListener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void removeItemSetChangeListener(final ItemSetChangeListener pListener)
+  {
+    if (itemSetEventListeners != null)
+    {
+      itemSetEventListeners.remove(pListener);
+      if (itemSetEventListeners.isEmpty())
+      {
+        itemSetEventListeners = null;
+      }
+    }
+  }
+
+  /**
+   * Fires the property set change event.
+   */
+  protected void firePropertySetChange()
+  {
+    if ((propertySetEventListeners != null) && !propertySetEventListeners.isEmpty())
+    {
+      final Container.PropertySetChangeEvent event = new DefaultPropertySetChangeEvent(this);
+      final Object[] listeners = propertySetEventListeners.toArray();
+      for (final Object listener : listeners)
+      {
+        ((Container.PropertySetChangeListener) listener).containerPropertySetChange(event);
+      }
+    }
+    markAsDirty();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated
+  public void addListener(final PropertySetChangeListener pListener)
+  {
+    addPropertySetChangeListener(pListener);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addPropertySetChangeListener(final PropertySetChangeListener pListener)
+  {
+    if (propertySetEventListeners == null)
+    {
+      propertySetEventListeners = new LinkedHashSet<Container.PropertySetChangeListener>();
+    }
+    propertySetEventListeners.add(pListener);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated
+  public void removeListener(final PropertySetChangeListener pListener)
+  {
+    removePropertySetChangeListener(pListener);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void removePropertySetChangeListener(final PropertySetChangeListener pListener)
+  {
+    if (propertySetEventListeners != null)
+    {
+      propertySetEventListeners.remove(pListener);
+      if (propertySetEventListeners.isEmpty())
+      {
+        propertySetEventListeners = null;
+      }
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setContainerDataSource(final Container pNewDataSource)
+  {
+    Container newDataSource = pNewDataSource;
+    if (newDataSource == null)
+    {
+      newDataSource = new IndexedContainer();
+    }
+
+    if (items != newDataSource)
+    {
+      // Removes listeners from the old datasource
+      if (items != null)
+      {
+        if (items instanceof Container.ItemSetChangeNotifier)
+        {
+          ((Container.ItemSetChangeNotifier) items).removeItemSetChangeListener(this);
+        }
+        if (items instanceof Container.PropertySetChangeNotifier)
+        {
+          ((Container.PropertySetChangeNotifier) items).removePropertySetChangeListener(this);
+        }
+      }
+
+      // Assigns new data source
+      items = newDataSource;
+
+      // Adds listeners
+      if (items != null)
+      {
+        if (items instanceof Container.ItemSetChangeNotifier)
+        {
+          ((Container.ItemSetChangeNotifier) items).addItemSetChangeListener(this);
+        }
+        if (items instanceof Container.PropertySetChangeNotifier)
+        {
+          ((Container.PropertySetChangeNotifier) items).addPropertySetChangeListener(this);
+        }
+      }
+
+      clearSelectedItems();
+
+      markAsDirty();
+
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Container getContainerDataSource()
+  {
+    return items;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Item getItem(final Object pItemId)
+  {
+    return items.getItem(pItemId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Collection<?> getContainerPropertyIds()
+  {
+    return items.getContainerPropertyIds();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Collection<?> getItemIds()
+  {
+    return items.getItemIds();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Property<?> getContainerProperty(final Object pItemId, final Object pPropertyId)
+  {
+    return items.getContainerProperty(pItemId, pPropertyId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Class<?> getType(final Object pPropertyId)
+  {
+    return items.getType(pPropertyId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int size()
+  {
+    return items.size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean containsId(final Object pItemId)
+  {
+    boolean contains = false;
+    if (pItemId != null)
+    {
+      contains = items.containsId(pItemId);
+    }
+    return contains;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Item addItem(final Object pItemId) throws UnsupportedOperationException
+  {
+    final Item retval = items.addItem(pItemId);
+    if ((retval != null) && !(items instanceof Container.ItemSetChangeNotifier))
+    {
+      fireItemSetChange();
+    }
+    return retval;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object addItem() throws UnsupportedOperationException
+  {
+    final Object retval = items.addItem();
+    if ((retval != null) && !(items instanceof Container.ItemSetChangeNotifier))
+    {
+      fireItemSetChange();
+    }
+    return retval;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean removeItem(final Object pItemId) throws UnsupportedOperationException
+  {
+    unselectitem(pItemId);
+    final boolean retval = items.removeItem(pItemId);
+    if (retval && !(items instanceof Container.ItemSetChangeNotifier))
+    {
+      fireItemSetChange();
+    }
+    return retval;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean addContainerProperty(final Object pPropertyId, final Class<?> pType,
+      final Object pDefaultValue) throws UnsupportedOperationException
+  {
+
+    final boolean retval = items.addContainerProperty(pPropertyId, pType, pDefaultValue);
+    if (retval && !(items instanceof Container.PropertySetChangeNotifier))
+    {
+      firePropertySetChange();
+    }
+    return retval;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean removeContainerProperty(final Object pPropertyId) throws UnsupportedOperationException
+  {
+    final boolean retval = items.removeContainerProperty(pPropertyId);
+    if (retval && !(items instanceof Container.PropertySetChangeNotifier))
+    {
+      firePropertySetChange();
+    }
+    return retval;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean removeAllItems() throws UnsupportedOperationException
+  {
+    final boolean retval = items.removeAllItems();
+    if (retval)
+    {
+      clearSelectedItems();
+      if (!(items instanceof Container.ItemSetChangeNotifier))
+      {
+        fireItemSetChange();
+      }
+    }
+    return retval;
   }
 
 }

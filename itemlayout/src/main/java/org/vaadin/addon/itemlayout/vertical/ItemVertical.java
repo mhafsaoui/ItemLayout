@@ -19,8 +19,8 @@
  */
 package org.vaadin.addon.itemlayout.vertical;
 
-import org.vaadin.addon.itemlayout.layout.AbstractListLayout;
-import org.vaadin.addon.itemlayout.widgetset.client.grid.ItemGridState;
+import org.vaadin.addon.itemlayout.list.AbstractListLayout;
+import org.vaadin.addon.itemlayout.widgetset.client.vertical.ItemVerticalState;
 
 /**
  * @author Jeremy Casery
@@ -45,9 +45,9 @@ public class ItemVertical extends AbstractListLayout
    * {@inheritDoc}
    */
   @Override
-  public ItemGridState getState()
+  public ItemVerticalState getState()
   {
-    return (ItemGridState) super.getState();
+    return (ItemVerticalState) super.getState();
   }
 
 }

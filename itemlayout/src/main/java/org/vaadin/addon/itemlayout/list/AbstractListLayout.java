@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.layout;
+package org.vaadin.addon.itemlayout.list;
 
-import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
-
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
+import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
+import org.vaadin.addon.itemlayout.widgetset.client.list.ItemListState;
 
 /**
  * @author Jeremy Casery
@@ -34,14 +32,6 @@ public abstract class AbstractListLayout extends AbstractItemLayout
    * Serial version id
    */
   private static final long serialVersionUID = 7856191817150158454L;
-  /**
-   * Default scroll interval
-   */
-  private int               scrollInterval   = 1;
-  /**
-   * Default scroller index
-   */
-  private int               scrollerIndex    = 0;
 
   /**
    * Default constructor.
@@ -55,10 +45,9 @@ public abstract class AbstractListLayout extends AbstractItemLayout
    * {@inheritDoc}
    */
   @Override
-  protected void paintLayoutAttributes(final PaintTarget pTarget) throws PaintException
+  public ItemListState getState()
   {
-    pTarget.addAttribute(ItemLayoutConstant.ATTRIBUTE_SCROLLINTERVAL, getScrollInterval());
-    pTarget.addAttribute(ItemLayoutConstant.ATTRIBUTE_SCROLLERINDEX, getScrollerIndex());
+    return (ItemListState) super.getState();
   }
 
   /**
@@ -68,18 +57,22 @@ public abstract class AbstractListLayout extends AbstractItemLayout
    */
   public int getScrollInterval()
   {
-    return scrollInterval;
+    return getState().scrollInterval;
   }
 
   /**
    * Set the scroll interval
    * 
-   * @param scrollInterval
+   * @param pSscrollInterval
    *          the scrollInterval to set
    */
-  public void setScrollInterval(final int scrollInterval)
+  public void setScrollInterval(final int pSscrollInterval)
   {
-    this.scrollInterval = scrollInterval;
+    if (getState().scrollInterval != pSscrollInterval)
+    {
+      getState().scrollInterval = pSscrollInterval;
+      markAsDirty();
+    }
   }
 
   /**
@@ -89,18 +82,22 @@ public abstract class AbstractListLayout extends AbstractItemLayout
    */
   public int getScrollerIndex()
   {
-    return scrollerIndex;
+    return getState().scrollerIndex;
   }
 
   /**
    * Set the scroller index
    * 
-   * @param scrollerIndex
+   * @param pScrollerIndex
    *          the scrollerIndex to set
    */
-  public void setScrollerIndex(final int scrollerIndex)
+  public void setScrollerIndex(final int pScrollerIndex)
   {
-    this.scrollerIndex = scrollerIndex;
+    if (getState().scrollerIndex != pScrollerIndex)
+    {
+      getState().scrollerIndex = pScrollerIndex;
+      markAsDirty();
+    }
   }
 
 }

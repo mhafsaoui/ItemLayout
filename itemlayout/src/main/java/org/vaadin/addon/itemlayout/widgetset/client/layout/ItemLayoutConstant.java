@@ -30,12 +30,6 @@ public class ItemLayoutConstant implements Serializable
   public static final String ATTRIBUTE_SCROLLERINDEX          = "scrollerIndex";
   public static final String ATTRIBUTE_SCROLLPREVELEMENT      = "scrollPrevElement";
   public static final String ATTRIBUTE_SCROLLNEXTELEMENT      = "scrollNextElement";
-  /**
-   * Tell the client that old keys are no longer valid because the server has
-   * cleared its key map.
-   */
-  @Deprecated
-  public static final String ATTRIBUTE_KEY_MAPPER_RESET       = "clearKeyMap";
 
   public static final String CLASSNAME                        = "v-itemlayout";
   public static final String CLASS_SLOT                       = CLASSNAME + "-slot";

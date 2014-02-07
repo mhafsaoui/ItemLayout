@@ -19,17 +19,12 @@
  */
 package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
 
-import java.util.Iterator;
-
 import org.vaadin.addon.itemlayout.horizontal.ItemHorizontal;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.AbstractListLayoutConnector;
-import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemSlot;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -49,30 +44,27 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
    * {@inheritDoc}
    */
   @Override
-  protected void renderedItems(final UIDL pUidl)
+  protected void removeAllItem()
   {
-    final UIDL itemsData = pUidl.getChildByTagName(ItemLayoutConstant.ATTRIBUTE_ITEMS);
-    final int attributeScrollerIndex = pUidl.getIntAttribute(ItemLayoutConstant.ATTRIBUTE_SCROLLERINDEX);
-    final int attributeScrollInterval = pUidl.getIntAttribute(ItemLayoutConstant.ATTRIBUTE_SCROLLINTERVAL);
-    setScrollerIndex(attributeScrollerIndex);
-    setScrollInterval(attributeScrollInterval);
-    if (itemsData != null)
-    {
-      final Iterator<Object> items = itemsData.getChildIterator();
-      while (items.hasNext())
-      {
-        final UIDL item = (UIDL) items.next();
-        final String key = item.getStringAttribute(ItemLayoutConstant.ATTRIBUTE_ITEM_KEY);
-        final ComponentConnector cellContent = getClient().getPaintable(item.getChildUIDL(0));
+    getWidget().removeAll();
 
-        final ItemSlot slot = prepareItemSlot(key, cellContent.getWidget());
-        getWidget().add(slot);
-      }
-    }
+  }
+
+  @Override
+  protected void addItemSlot(final ItemSlot pSlot)
+  {
+    getWidget().add(pSlot);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void postItemsRendered()
+  {
     getWidget().getElemVisibleListLayout().setWidth(
         Integer.toString(getWidget().getOffsetWidth() - (48 * 2)) + "px");
-    initScroller();
-
+    super.postItemsRendered();
   }
 
   /**
@@ -146,7 +138,7 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
   @Override
   protected Widget getWidget(final int pIndex)
   {
-    if ((pIndex < 0) || (pIndex >= getWidgetCount()) || getWidgetCount() < 1)
+    if ((pIndex < 0) || (pIndex >= getWidgetCount()) || (getWidgetCount() < 1))
     {
       return null;
     }

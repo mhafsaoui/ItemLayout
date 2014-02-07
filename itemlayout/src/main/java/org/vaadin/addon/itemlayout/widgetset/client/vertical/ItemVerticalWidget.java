@@ -87,6 +87,15 @@ public class ItemVerticalWidget extends VerticalPanel
     return elemsListLayout.remove(w);
   }
 
+  public void removeAll()
+  {
+    for (int i = 0; i < elemsListLayout.getWidgetCount(); i++)
+    {
+      final Widget widget = getWidget(i);
+      elemsListLayout.remove(widget);
+    }
+  }
+
   /**
    * @return the prevLayout
    */
