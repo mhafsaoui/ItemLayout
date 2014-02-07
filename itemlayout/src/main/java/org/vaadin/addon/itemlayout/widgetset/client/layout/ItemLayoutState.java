@@ -54,11 +54,11 @@ public class ItemLayoutState extends AbstractLayoutState
   /**
    * Allow user to select at least one item
    */
-  public boolean                selectable           = true;
+  public boolean                selectable           = false;
   /**
    * Allow user to select many items
    */
-  public boolean                multiSelectable      = true;
+  public boolean                multiSelectable      = false;
   /**
    * Allow user to select nothing
    */
