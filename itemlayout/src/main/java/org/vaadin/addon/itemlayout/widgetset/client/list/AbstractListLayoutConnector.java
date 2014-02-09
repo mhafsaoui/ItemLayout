@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.widgetset.client.layout;
+package org.vaadin.addon.itemlayout.widgetset.client.list;
 
-import org.vaadin.addon.itemlayout.widgetset.client.list.ItemListState;
+import org.vaadin.addon.itemlayout.widgetset.client.layout.AbstractItemLayoutConnector;
+import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -27,8 +28,11 @@ import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.layout.ElementResizeEvent;
+import com.vaadin.client.ui.layout.ElementResizeListener;
 
 /**
  * @author Jeremy Casery
@@ -39,23 +43,25 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   /**
    * Serial version Id
    */
-  private static final long   serialVersionUID = 527577753200374050L;
-  /**
-   * Default scroll interval
-   */
-  private int                 scrollInterval   = 1;
-  /**
-   * Default scroller index
-   */
-  private int                 scrollerIndex    = 0;
+  private static final long           serialVersionUID = 527577753200374050L;
   /**
    * Handler for next button click listener
    */
-  private HandlerRegistration nextButtonClickHandler;
+  private HandlerRegistration         nextButtonClickHandler;
   /**
    * Handler for previous button click listener
    */
-  private HandlerRegistration prevButtonClickHandler;
+  private HandlerRegistration         prevButtonClickHandler;
+
+  private final ElementResizeListener resizeListener   = new ElementResizeListener()
+                                                       {
+                                                         @Override
+                                                         public void onElementResize(
+                                                             final ElementResizeEvent e)
+                                                         {
+                                                           updateScrollButtonsVisibility();
+                                                         }
+                                                       };
 
   /**
    * {@inheritDoc}
@@ -70,11 +76,18 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    * {@inheritDoc}
    */
   @Override
+  public ItemListWidget getWidget()
+  {
+    return (ItemListWidget) super.getWidget();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public void onStateChanged(final StateChangeEvent pStateChangeEvent)
   {
     super.onStateChanged(pStateChangeEvent);
-    setScrollerIndex(getState().scrollerIndex);
-    setScrollInterval(getState().scrollInterval);
     hideDefaultScrolledElems();
   }
 
@@ -86,16 +99,18 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   {
     addMouseWheelListener();
     updateScrollButtonsVisibility();
+    getLayoutManager().removeElementResizeListener(getWidget().getElement(), resizeListener);
+    getLayoutManager().addElementResizeListener(getWidget().getElement(), resizeListener);
   }
 
   /**
-   * Scroll to scrollerIndex, i.e. hide elements with index minor to scrollerIndex
+   * Scroll to getState().scrollerIndex, i.e. hide elements with index minor to getState().scrollerIndex
    */
   protected void hideDefaultScrolledElems()
   {
-    if (scrollerIndex > 0)
+    if (getState().scrollerIndex > 0)
     {
-      for (int i = 0; i < scrollerIndex; i++)
+      for (int i = 0; i < getState().scrollerIndex; i++)
       {
         showWidget(getWidget(i), false);
       }
@@ -249,12 +264,12 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   }
 
   /**
-   * Scroll <scrollInterval> times to next element.
+   * Scroll <getState().scrollInterval> times to next element.
    * Called next button click or MouseWheel south
    */
   public void scrollNextEvent()
   {
-    for (int i = 0; i < scrollInterval; i++)
+    for (int i = 0; i < getState().scrollInterval; i++)
     {
       if (isClippedElems())
       {
@@ -265,12 +280,12 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   }
 
   /**
-   * Scroll <scrollInterval> times to previous element.
+   * Scroll <getState().scrollInterval> times to previous element.
    * Called previous button click or MouseWheel north
    */
   public void scrollPrevEvent()
   {
-    for (int i = 0; i < scrollInterval; i++)
+    for (int i = 0; i < getState().scrollInterval; i++)
     {
       if (isScrolledElems())
       {
@@ -285,12 +300,12 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    */
   private void scrollPrev()
   {
-    final int prevVisible = getPreviousVisibleElem(scrollerIndex);
+    final int prevVisible = getPreviousVisibleElem(getState().scrollerIndex);
     if (prevVisible != -1)
     {
       final Widget newFirst = getWidget(prevVisible);
       showWidget(newFirst, true);
-      scrollerIndex--;
+      getState().scrollerIndex--;
     }
   }
 
@@ -299,12 +314,12 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    */
   private void scrollNext()
   {
-    final int nextVisible = getNextVisibleElem(scrollerIndex);
+    final int nextVisible = getNextVisibleElem(getState().scrollerIndex);
     if (nextVisible != -1)
     {
-      final Widget currentFirst = getWidget(scrollerIndex);
+      final Widget currentFirst = getWidget(getState().scrollerIndex);
       showWidget(currentFirst, false);
-      scrollerIndex++;
+      getState().scrollerIndex++;
     }
   }
 
@@ -355,7 +370,7 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    */
   private boolean isScrolledElems()
   {
-    return scrollerIndex > getFirstVisibleElem();
+    return getState().scrollerIndex > getFirstVisibleElem();
   }
 
   /**
@@ -436,53 +451,8 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   /**
    * Get the visible elements list layout
    * 
-   * @return {@link FocusPanel} the visible elements list layout
+   * @return {@link Panel} the visible elements list layout
    */
   protected abstract FocusPanel getElemVisibleListLayout();
-
-  /**
-   * Get the scroll interval
-   * 
-   * @return {@link int} the scrollInterval
-   */
-  public int getScrollInterval()
-  {
-    return scrollInterval;
-  }
-
-  /**
-   * Set the scroll interval, each scroll event will scroll <scrollInterval> elements.
-   * Default is 1.
-   * 
-   * @param scrollInterval
-   *          the scrollInterval to set
-   */
-  public void setScrollInterval(final int scrollInterval)
-  {
-    this.scrollInterval = scrollInterval;
-  }
-
-  /**
-   * Get the scroller index
-   * 
-   * @return the scrollerIndex
-   */
-  public int getScrollerIndex()
-  {
-    return scrollerIndex;
-  }
-
-  /**
-   * Set the scroller index. Define if list will start for first element, or already scrolled to this
-   * <scrollerIndex>.
-   * Default is 0.
-   * 
-   * @param scrollerIndex
-   *          the scrollerIndex to set
-   */
-  public void setScrollerIndex(final int scrollerIndex)
-  {
-    this.scrollerIndex = scrollerIndex;
-  }
 
 }

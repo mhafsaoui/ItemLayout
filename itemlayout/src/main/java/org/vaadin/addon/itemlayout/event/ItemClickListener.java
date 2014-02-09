@@ -14,5 +14,5 @@ public interface ItemClickListener
    * @param pEvent
    *          An event containing information about the click.
    */
-  void itemClick(ItemClickEvent pEvent);
+  void onItemClick(final ItemClickEvent pEvent);
 };

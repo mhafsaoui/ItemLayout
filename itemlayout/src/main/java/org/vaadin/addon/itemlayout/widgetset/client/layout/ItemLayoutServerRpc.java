@@ -15,9 +15,9 @@ public interface ItemLayoutServerRpc extends ServerRpc
   /**
    * Selects item with given id.
    * 
-   * @param pItemIndex
-   *          Item index to select at. Selecting the same item again and again has no effect.
+   * @param pItemId
+   *          Item id to select.
    */
-  void selectItemAtIndex(final Integer pItemIndex);
+  void onSelectItem(final String pItemId);
 
 }

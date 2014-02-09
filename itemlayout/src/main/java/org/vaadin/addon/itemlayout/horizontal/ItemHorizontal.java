@@ -39,6 +39,7 @@ public class ItemHorizontal extends AbstractListLayout
   public ItemHorizontal()
   {
     super();
+    setWidth(100, Unit.PERCENTAGE);
   }
 
   /**

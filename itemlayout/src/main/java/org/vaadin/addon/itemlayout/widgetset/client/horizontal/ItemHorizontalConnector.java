@@ -20,11 +20,12 @@
 package org.vaadin.addon.itemlayout.widgetset.client.horizontal;
 
 import org.vaadin.addon.itemlayout.horizontal.ItemHorizontal;
-import org.vaadin.addon.itemlayout.widgetset.client.layout.AbstractListLayoutConnector;
-import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemSlot;
+import org.vaadin.addon.itemlayout.widgetset.client.list.AbstractListLayoutConnector;
+import org.vaadin.addon.itemlayout.widgetset.client.model.ItemSlot;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.ComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -44,27 +45,16 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
    * {@inheritDoc}
    */
   @Override
-  protected void removeAllItem()
+  protected void initLayout()
   {
     getWidget().removeAll();
 
   }
 
   @Override
-  protected void addItemSlot(final ItemSlot pSlot)
+  protected void addItemSlot(final ComponentConnector pConnector, final ItemSlot pSlot)
   {
     getWidget().add(pSlot);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void postItemsRendered()
-  {
-    getWidget().getElemVisibleListLayout().setWidth(
-        Integer.toString(getWidget().getOffsetWidth() - (48 * 2)) + "px");
-    super.postItemsRendered();
   }
 
   /**

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.vaadin.addon.itemlayout.widgetset.client.resources;
+package org.vaadin.addon.itemlayout.widgetset.client.model;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;

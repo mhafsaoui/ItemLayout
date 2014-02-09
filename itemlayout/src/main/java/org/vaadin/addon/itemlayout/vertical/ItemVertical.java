@@ -39,6 +39,7 @@ public class ItemVertical extends AbstractListLayout
   public ItemVertical()
   {
     super();
+    setHeight(100, Unit.PERCENTAGE);
   }
 
   /**

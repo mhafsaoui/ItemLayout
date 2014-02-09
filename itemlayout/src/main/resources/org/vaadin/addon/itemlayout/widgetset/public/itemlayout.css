@@ -21,14 +21,21 @@
 
 .v-itemlayout-scroll-visiblelist {
 	overflow: hidden !important;
-	display: block !important;
-	margin: 0;
-	border: none;
-	border-spacing: 0;
 }
 
 .v-itemlayout-slot-removed {
 	display: none !important;
+}
+
+.v-itemlayout-horizontal .v-itemlayout-scroll-prev {
+	float:left;
+}
+.v-itemlayout-horizontal .v-itemlayout-scroll-next {
+	float:right;
+}
+
+.v-itemlayout-vertical .v-itemlayout-scroll-visiblelist {
+	height: 100%;
 }
 
 .v-itemlayout-scroll-hidden {

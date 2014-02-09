@@ -19,15 +19,23 @@
  */
 package org.vaadin.addon.itemlayout.demo.client.ui;
 
+import org.vaadin.addon.itemlayout.event.ItemClickEvent;
+import org.vaadin.addon.itemlayout.event.ItemClickListener;
 import org.vaadin.addon.itemlayout.grid.ItemGrid;
 import org.vaadin.addon.itemlayout.horizontal.ItemHorizontal;
+import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
 import org.vaadin.addon.itemlayout.vertical.ItemVertical;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -52,13 +60,14 @@ public class ItemLayoutDemoUI extends UI
   {
     // Main layout
     final VerticalLayout layout = new VerticalLayout();
+    layout.setMargin(true);
     layout.addComponent(new Label("Demo for ItemLayout addon"));
-    // final Component itemGrid = initItemGridExamples();
-    // layout.addComponent(itemGrid);
+    final Component itemGrid = initItemGridExamples();
+    layout.addComponent(itemGrid);
     final Component itemHorizontal = initItemHorizontalExamples();
     layout.addComponent(itemHorizontal);
-    // final Component itemVertical = initItemVerticalExamples();
-    // layout.addComponent(itemVertical);
+    final Component itemVertical = initItemVerticalExamples();
+    layout.addComponent(itemVertical);
 
     setContent(layout);
   }
@@ -69,41 +78,18 @@ public class ItemLayoutDemoUI extends UI
     final HorizontalLayout example = new HorizontalLayout();
     example.addComponent(new Label("Demo for ItemGrid"));
 
-    // No selection example
-    final VerticalLayout noSelectionLayout = new VerticalLayout();
-    noSelectionLayout.setMargin(true);
-    example.addComponent(noSelectionLayout);
-    noSelectionLayout.addComponent(new Label("No selection"));
-    final ItemGrid noSelection = buildDefaultItemGrid();
-    noSelectionLayout.addComponent(noSelection);
+    final HorizontalLayout horizontalLayout = new HorizontalLayout();
+    horizontalLayout.setMargin(true);
+    example.addComponent(horizontalLayout);
 
-    // Single selection example
-    final VerticalLayout singleSelectionLayout = new VerticalLayout();
-    singleSelectionLayout.setMargin(true);
-    example.addComponent(singleSelectionLayout);
-    singleSelectionLayout.addComponent(new Label("Single selection"));
-    final ItemGrid singleSelection = buildDefaultItemGrid();
-    singleSelection.setSelectable(true);
-    singleSelectionLayout.addComponent(singleSelection);
+    final ItemGrid itemGrid = buildDefaultItemGrid();
+    itemGrid.addItemClickListener(buildClickListener());
 
-    // Multi selection example
-    final VerticalLayout multiSelectionLayout = new VerticalLayout();
-    multiSelectionLayout.setMargin(true);
-    example.addComponent(multiSelectionLayout);
-    multiSelectionLayout.addComponent(new Label("Multi selection"));
-    final ItemGrid multiSelection = buildDefaultItemGrid();
-    multiSelection.setSelectable(true);
-    multiSelection.setMultiSelect(true);
-    multiSelectionLayout.addComponent(multiSelection);
+    OptionGroup sample = buildSelectableOption();
+    sample.addValueChangeListener(buildValueChangeListener(itemGrid));
+    horizontalLayout.addComponent(sample);
+    horizontalLayout.addComponent(itemGrid);
     return example;
-  }
-
-  private ItemGrid buildDefaultItemGrid()
-  {
-    final ItemGrid item = new ItemGrid();
-    final IndexedContainer container = buildDefaultContainer();
-    item.setContainerDataSource(container);
-    return item;
   }
 
   private Component initItemVerticalExamples()
@@ -111,35 +97,18 @@ public class ItemLayoutDemoUI extends UI
     // Layout to show examples
     final VerticalLayout example = new VerticalLayout();
     example.addComponent(new Label("Demo for ItemVertical"));
-    final HorizontalLayout exampleLayout = new HorizontalLayout();
-    example.addComponent(exampleLayout);
 
-    // No selection example
-    final VerticalLayout noSelectionLayout = new VerticalLayout();
-    noSelectionLayout.setMargin(true);
-    exampleLayout.addComponent(noSelectionLayout);
-    noSelectionLayout.addComponent(new Label("No selection"));
-    final ItemVertical noSelection = buildDefaultItemVertical();
-    noSelectionLayout.addComponent(noSelection);
+    final HorizontalLayout horizontalLayout = new HorizontalLayout();
+    horizontalLayout.setMargin(true);
+    example.addComponent(horizontalLayout);
 
-    // Single selection example
-    final VerticalLayout singleSelectionLayout = new VerticalLayout();
-    singleSelectionLayout.setMargin(true);
-    exampleLayout.addComponent(singleSelectionLayout);
-    singleSelectionLayout.addComponent(new Label("Single selection"));
-    final ItemVertical singleSelection = buildDefaultItemVertical();
-    singleSelection.setSelectable(true);
-    singleSelectionLayout.addComponent(singleSelection);
+    final ItemVertical itemVertical = buildDefaultItemVertical();
+    itemVertical.addItemClickListener(buildClickListener());
 
-    // Multi selection example
-    final VerticalLayout multiSelectionLayout = new VerticalLayout();
-    multiSelectionLayout.setMargin(true);
-    exampleLayout.addComponent(multiSelectionLayout);
-    multiSelectionLayout.addComponent(new Label("Multi selection"));
-    final ItemVertical multiSelection = buildDefaultItemVertical();
-    multiSelection.setSelectable(true);
-    multiSelection.setMultiSelect(true);
-    multiSelectionLayout.addComponent(multiSelection);
+    OptionGroup sample = buildSelectableOption();
+    sample.addValueChangeListener(buildValueChangeListener(itemVertical));
+    horizontalLayout.addComponent(sample);
+    horizontalLayout.addComponent(itemVertical);
     return example;
   }
 
@@ -149,41 +118,36 @@ public class ItemLayoutDemoUI extends UI
     final VerticalLayout example = new VerticalLayout();
     example.addComponent(new Label("Demo for ItemHorizontal"));
 
-    // No selection example
-    final VerticalLayout noSelectionLayout = new VerticalLayout();
-    noSelectionLayout.setMargin(true);
-    example.addComponent(noSelectionLayout);
-    noSelectionLayout.addComponent(new Label("No selection"));
-    final ItemHorizontal noSelection = buildDefaultItemHorizontal();
-    noSelection.setWidth(100, Unit.PERCENTAGE);
-    noSelectionLayout.addComponent(noSelection);
+    final HorizontalLayout horizontalLayout = new HorizontalLayout();
+    horizontalLayout.setWidth(100, Unit.PERCENTAGE);
+    horizontalLayout.setMargin(true);
+    example.addComponent(horizontalLayout);
 
-    // Single selection example
-    final VerticalLayout singleSelectionLayout = new VerticalLayout();
-    singleSelectionLayout.setMargin(true);
-    example.addComponent(singleSelectionLayout);
-    singleSelectionLayout.addComponent(new Label("Single selection"));
-    final ItemHorizontal singleSelection = buildDefaultItemHorizontal();
-    singleSelection.setSelectable(true);
-    singleSelectionLayout.addComponent(singleSelection);
-    //
-    // // Multi selection example
-    // final VerticalLayout multiSelectionLayout = new VerticalLayout();
-    // multiSelectionLayout.setMargin(true);
-    // example.addComponent(multiSelectionLayout);
-    // multiSelectionLayout.addComponent(new Label("Multi selection"));
-    // final ItemHorizontal multiSelection = buildDefaultItemHorizontal();
-    // multiSelection.setSelectable(true);
-    // multiSelection.setMultiSelect(true);
-    // multiSelectionLayout.addComponent(multiSelection);
+    final ItemHorizontal itemHorizontal = buildDefaultItemHorizontal();
+    itemHorizontal.addItemClickListener(buildClickListener());
+
+    OptionGroup sample = buildSelectableOption();
+    sample.addValueChangeListener(buildValueChangeListener(itemHorizontal));
+    horizontalLayout.addComponent(sample);
+    horizontalLayout.addComponent(itemHorizontal);
+    horizontalLayout.setExpandRatio(itemHorizontal, 1f);
     return example;
+  }
+
+  private ItemGrid buildDefaultItemGrid()
+  {
+    final ItemGrid item = new ItemGrid();
+    item.setColumns(5);
+    final IndexedContainer container = buildDefaultContainer();
+    item.setContainerDataSource(container);
+    return item;
   }
 
   private ItemHorizontal buildDefaultItemHorizontal()
   {
     final ItemHorizontal item = new ItemHorizontal();
-    item.setWidth(600, Unit.PIXELS);
-    item.setScrollerIndex(10);
+    item.setWidth(100, Unit.PERCENTAGE);
+    item.setScrollerIndex(5);
     item.setScrollInterval(3);
     final IndexedContainer container = buildDefaultContainer();
     item.setContainerDataSource(container);
@@ -206,11 +170,66 @@ public class ItemLayoutDemoUI extends UI
     container.addContainerProperty("description", String.class, null);
     for (int i = 0; i < 25; i++)
     {
-      final Object itemId = container.addItem();
-      container.getContainerProperty(itemId, "caption").setValue("Item " + i);
-      container.getContainerProperty(itemId, "description").setValue("Item at index " + i);
+      container.addItem(i);
+      container.getContainerProperty(i, "caption").setValue("Item " + i);
+      container.getContainerProperty(i, "description").setValue("Item at index " + i);
     }
     return container;
+  }
+
+  private OptionGroup buildSelectableOption()
+  {
+    OptionGroup sample = new OptionGroup("Select a selectable mode");
+    sample.addItem(1);
+    sample.setItemCaption(1, "Disable");
+    sample.addItem(2);
+    sample.setItemCaption(2, "Single selection");
+    sample.addItem(3);
+    sample.setItemCaption(3, "Multi selection");
+    sample.select(1);
+    sample.setNullSelectionAllowed(false);
+    sample.setHtmlContentAllowed(true);
+    sample.setImmediate(true);
+    return sample;
+  }
+
+  private ItemClickListener buildClickListener()
+  {
+    return new ItemClickListener()
+    {
+      @Override
+      public void onItemClick(final ItemClickEvent pEvent)
+      {
+        Notification.show("Item clicked:", "" + pEvent.getItemId(), Type.TRAY_NOTIFICATION);
+      }
+    };
+  }
+
+  private ValueChangeListener buildValueChangeListener(final AbstractItemLayout pLayout)
+  {
+    return new ValueChangeListener()
+    {
+
+      @Override
+      public void valueChange(final ValueChangeEvent event)
+      {
+        final int valueString = Integer.valueOf(event.getProperty().getValue().toString());
+        if (valueString == 1)
+        {
+          pLayout.setSelectable(false);
+        }
+        else if (valueString == 2)
+        {
+          pLayout.setSelectable(true);
+          pLayout.setMultiSelect(false);
+        }
+        else if (valueString == 3)
+        {
+          pLayout.setSelectable(true);
+          pLayout.setMultiSelect(true);
+        }
+      }
+    };
   }
 
 }

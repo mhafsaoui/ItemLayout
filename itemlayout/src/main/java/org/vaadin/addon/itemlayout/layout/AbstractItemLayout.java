@@ -17,6 +17,7 @@ import org.vaadin.addon.itemlayout.layout.model.DefaultItemGenerator;
 import org.vaadin.addon.itemlayout.layout.model.DefaultItemSetChangeEvent;
 import org.vaadin.addon.itemlayout.layout.model.DefaultPropertySetChangeEvent;
 import org.vaadin.addon.itemlayout.layout.model.ItemGenerator;
+import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutServerRpc;
 import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutState;
 
 import com.vaadin.data.Container;
@@ -89,6 +90,23 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
     super();
     setContainerDataSource(new IndexedContainer());
     generator = new DefaultItemGenerator();
+    this.registerRpc(new ItemLayoutServerRpc()
+    {
+      /**
+       * Serial version id
+       */
+      private static final long serialVersionUID = 7140970124276573377L;
+
+      /**
+       * {@inheritDoc}
+       */
+      @Override
+      public void onSelectItem(final String pItemId)
+      {
+        handleClickEvent(pItemId);
+      }
+
+    });
   }
 
   /**
@@ -323,33 +341,9 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   {
     for (final ItemClickListener listener : clickListeners)
     {
-      listener.itemClick(pEvent);
+      listener.onItemClick(pEvent);
     }
     markAsDirty();
-  }
-
-  /**
-   * Handles click event
-   * 
-   * @param item
-   *          id
-   *          item id selected
-   */
-  private void handleClickEvent(final Object pItemId)
-  {
-    if ((isSelectable()) && (pItemId != null))
-    {
-      final boolean isAlreadySelected = isSelected(pItemId);
-      if (isAlreadySelected)
-      {
-        unselectitem(pItemId, true);
-      }
-      else
-      {
-        selectItem(pItemId, true);
-      }
-
-    }
   }
 
   /**
@@ -366,7 +360,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   }
 
   /**
-   * Setter for property selectable.
+   * Setter for property selectable. Disable selectable mode will clear current selection.
    * <p>
    * The item layout is not selectable by default.
    * </p>
@@ -379,6 +373,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
     if (getState().selectable != pSelectable)
     {
       getState().selectable = pSelectable;
+      sanitizeSelectedItems();
       markAsDirty();
     }
   }
@@ -394,14 +389,10 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   }
 
   /**
-   * Sets the multiselect mode. Setting multiselect mode false may lose
-   * selection information: if selected items set contains one or more
-   * selected items, only one of the selected items is kept as selected.
-   * Subclasses of AbstractSelect can choose not to support changing the
-   * multiselect mode, and may throw {@link UnsupportedOperationException}.
+   * Sets the multiselect mode. Setting multiselect mode false will clean current selection.
    * 
    * @param pMultiSelect
-   *          the New value of property multiSelect.
+   *          the new value of property multiSelect.
    */
   public void setMultiSelect(final boolean pMultiSelect)
   {
@@ -409,6 +400,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
     {
       // Selection before mode change
       getState().multiSelectable = pMultiSelect;
+      sanitizeSelectedItems();
       markAsDirty();
     }
   }
@@ -428,6 +420,15 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
       isSelected = true;
     }
     return isSelected;
+  }
+
+  protected void sanitizeSelectedItems()
+  {
+    if ((getState().selectable == false) || (getState().multiSelectable == false))
+    {
+      clearSelectedItems();
+    }
+
   }
 
   /**
@@ -461,19 +462,19 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   public void clearSelectedItems()
   {
-    if (getState().selectedItems == null)
-    {
-      getState().selectedItems = new HashSet<String>();
-    }
-    else
-    {
-      getState().selectedItems.clear();
-    }
+    getState().selectedItems = new HashSet<String>();
+    markAsDirty();
   }
 
+  /**
+   * Selects an item, by default it will notify all listener
+   * 
+   * @param pItemId
+   *          the identifier of the Item to be selected.
+   */
   public void selectItem(final Object pItemId)
   {
-    selectItem(pItemId, false);
+    selectItem(pItemId, true);
   }
 
   public void selectItem(final Object pItemId, final boolean pFireEvent)
@@ -489,20 +490,21 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
       {
         fireItemClick(new ItemClickEvent(pItemId, true));
       }
+      markAsDirty();
     }
   }
 
   /**
-   * Unselects an item.
+   * Unselects an item, by default it will notify all listener
    * 
    * @param pItemId
    *          the identifier of the Item to be unselected.
    * @see #getNullSelectionItemId()
    * @see #setNullSelectionItemId(Object)
    */
-  public void unselectitem(final Object pItemId)
+  public void unselectItem(final Object pItemId)
   {
-    unselectitem(pItemId, false);
+    unselectItem(pItemId, true);
   }
 
   /**
@@ -513,14 +515,41 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * @param pFireEvent
    *          true to fire a {@link ItemClickEvent}
    */
-  public void unselectitem(final Object pItemId, final boolean pFireEvent)
+  public void unselectItem(final Object pItemId, final boolean pFireEvent)
   {
-    if ((pItemId != null) && (isSelected(pItemId)))
+    if ((pItemId != null)
+        && (isSelected(pItemId))
+        && (((getState().selectedItems.size() == 1) && (isNullSelectionAllowed())) || (getState().selectedItems
+            .size() != 1)))
     {
       getState().selectedItems.remove(pItemId);
       if (pFireEvent)
       {
         fireItemClick(new ItemClickEvent(pItemId, false));
+      }
+      markAsDirty();
+    }
+  }
+
+  /**
+   * Handles click event
+   * 
+   * @param item
+   *          id
+   *          item id selected
+   */
+  private void handleClickEvent(final Object pItemId)
+  {
+    if ((isSelectable()) && (pItemId != null))
+    {
+      final boolean isAlreadySelected = isSelected(pItemId);
+      if (isAlreadySelected)
+      {
+        unselectItem(pItemId);
+      }
+      else
+      {
+        selectItem(pItemId);
       }
     }
   }
@@ -579,7 +608,11 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
     {
       throw new IllegalArgumentException("Can not add null as a ItemGenerator");
     }
-    generator = pItemGenerator;
+    if (generator.equals(pItemGenerator) == false)
+    {
+      generator = pItemGenerator;
+      updateItemComponents();
+    }
   }
 
   /**
@@ -892,7 +925,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   @Override
   public boolean removeItem(final Object pItemId) throws UnsupportedOperationException
   {
-    unselectitem(pItemId);
+    unselectItem(pItemId, false);
     final boolean retval = items.removeItem(pItemId);
     if (retval && !(items instanceof Container.ItemSetChangeNotifier))
     {

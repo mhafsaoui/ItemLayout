@@ -38,5 +38,6 @@ public class ItemGridState extends ItemLayoutState
    * Contains the number of column, default value is 3
    */
   public int                columns          = 3;
+  public static String      COLUMNS          = "columns";
 
 }

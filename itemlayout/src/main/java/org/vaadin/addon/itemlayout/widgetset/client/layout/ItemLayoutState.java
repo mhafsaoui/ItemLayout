@@ -51,6 +51,7 @@ public class ItemLayoutState extends AbstractLayoutState
    * Selected items
    */
   public Set<String>            selectedItems        = new HashSet<String>();
+  public static String          SELECTED_ITEMS       = "selectedItems";
   /**
    * Allow user to select at least one item
    */
