@@ -10,7 +10,7 @@ public class ItemClickEvent
   /**
    * Contains the item id
    */
-  private final Object  itemId;
+  private final String  itemId;
   /**
    * Contains the item id
    */
@@ -24,7 +24,7 @@ public class ItemClickEvent
    * @param pIsSelected
    *          true for selected item
    */
-  public ItemClickEvent(final Object pItemId, final boolean pIsSelected)
+  public ItemClickEvent(final String pItemId, final boolean pIsSelected)
   {
     itemId = pItemId;
     selected = pIsSelected;
@@ -36,7 +36,7 @@ public class ItemClickEvent
    * 
    * @return the itemId
    */
-  public Object getItemId()
+  public String getItemId()
   {
     return itemId;
   }

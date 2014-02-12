@@ -50,15 +50,16 @@ public abstract class AbstractItemLayoutConnector extends AbstractLayoutConnecto
   {
     super.onStateChanged(stateChangeEvent);
 
-    boolean hasSelectedItemsChanged = stateChangeEvent.hasPropertyChanged(ItemLayoutState.SELECTED_ITEMS);
+    final boolean hasSelectedItemsChanged = stateChangeEvent
+        .hasPropertyChanged(ItemLayoutState.SELECTED_ITEMS);
     if (hasSelectedItemsChanged)
     {
-      Set<Entry<Object, ItemSlot>> entrySet = slotById.entrySet();
-      for (Entry<Object, ItemSlot> entry : entrySet)
+      final Set<Entry<Object, ItemSlot>> entrySet = slotById.entrySet();
+      for (final Entry<Object, ItemSlot> entry : entrySet)
       {
         entry.getValue().unselect();
       }
-      for (String itemId : getState().selectedItems)
+      for (final String itemId : getState().selectedItems)
       {
         if (slotById.containsKey(itemId))
         {

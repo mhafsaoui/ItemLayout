@@ -2,6 +2,7 @@ package org.vaadin.addon.itemlayout.layout;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -472,12 +473,12 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * @param pItemId
    *          the identifier of the Item to be selected.
    */
-  public void selectItem(final Object pItemId)
+  public void selectItem(final String pItemId)
   {
     selectItem(pItemId, true);
   }
 
-  public void selectItem(final Object pItemId, final boolean pFireEvent)
+  public void selectItem(final String pItemId, final boolean pFireEvent)
   {
     if ((pItemId != null) && (isSelected(pItemId) == false))
     {
@@ -502,7 +503,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * @see #getNullSelectionItemId()
    * @see #setNullSelectionItemId(Object)
    */
-  public void unselectItem(final Object pItemId)
+  public void unselectItem(final String pItemId)
   {
     unselectItem(pItemId, true);
   }
@@ -515,7 +516,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * @param pFireEvent
    *          true to fire a {@link ItemClickEvent}
    */
-  public void unselectItem(final Object pItemId, final boolean pFireEvent)
+  public void unselectItem(final String pItemId, final boolean pFireEvent)
   {
     if ((pItemId != null)
         && (isSelected(pItemId))
@@ -538,7 +539,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    *          id
    *          item id selected
    */
-  private void handleClickEvent(final Object pItemId)
+  private void handleClickEvent(final String pItemId)
   {
     if ((isSelectable()) && (pItemId != null))
     {
@@ -561,6 +562,16 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   public ItemLayoutState getState()
   {
     return (ItemLayoutState) super.getState();
+  }
+
+  /**
+   * Get list of selected items
+   * 
+   * @return {@link Set} of items
+   */
+  public Set<String> getSelectedItems()
+  {
+    return Collections.unmodifiableSet(getState().selectedItems);
   }
 
   /**
@@ -925,7 +936,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   @Override
   public boolean removeItem(final Object pItemId) throws UnsupportedOperationException
   {
-    unselectItem(pItemId, false);
+    unselectItem(pItemId.toString(), false);
     final boolean retval = items.removeItem(pItemId);
     if (retval && !(items instanceof Container.ItemSetChangeNotifier))
     {
