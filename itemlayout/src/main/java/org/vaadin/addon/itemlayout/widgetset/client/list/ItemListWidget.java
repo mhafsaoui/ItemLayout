@@ -52,7 +52,7 @@ public abstract class ItemListWidget extends ComplexPanel
   public ItemListWidget(final boolean pVertical)
   {
     super();
-    Element div = DOM.createDiv();
+    final Element div = DOM.createDiv();
     setElement(div);
     if (pVertical)
     {
@@ -137,11 +137,7 @@ public abstract class ItemListWidget extends ComplexPanel
   {
     if (elemsListLayout != null)
     {
-      for (int i = 0; i < elemsListLayout.getWidgetCount(); i++)
-      {
-        final Widget widget = getWidget(i);
-        elemsListLayout.remove(widget);
-      }
+      elemsListLayout.clear();
     }
   }
 

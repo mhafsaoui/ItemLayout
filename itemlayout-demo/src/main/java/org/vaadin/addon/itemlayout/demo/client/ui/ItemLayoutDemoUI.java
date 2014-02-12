@@ -30,6 +30,8 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -50,7 +52,9 @@ public class ItemLayoutDemoUI extends UI
   /**
    * Serial version id
    */
-  private static final long serialVersionUID = -7764280046700991233L;
+  private static final long      serialVersionUID = -7764280046700991233L;
+
+  private final IndexedContainer container        = new IndexedContainer();
 
   /**
    * {@inheritDoc}
@@ -58,10 +62,14 @@ public class ItemLayoutDemoUI extends UI
   @Override
   protected void init(final VaadinRequest request)
   {
+    // Demo datas
+    buildDefaultContainer();
     // Main layout
     final VerticalLayout layout = new VerticalLayout();
     layout.setMargin(true);
     layout.addComponent(new Label("Demo for ItemLayout addon"));
+    final Component demoButtons = initActionButtons();
+    layout.addComponent(demoButtons);
     final Component itemGrid = initItemGridExamples();
     layout.addComponent(itemGrid);
     final Component itemHorizontal = initItemHorizontalExamples();
@@ -70,6 +78,38 @@ public class ItemLayoutDemoUI extends UI
     layout.addComponent(itemVertical);
 
     setContent(layout);
+  }
+
+  private Component initActionButtons()
+  {
+    final HorizontalLayout buttonsLayout = new HorizontalLayout();
+    final Button addItemButton = new Button("Add an item");
+    final Button removeItemButton = new Button("Remove last item");
+    addItemButton.addClickListener(new Button.ClickListener()
+    {
+
+      @Override
+      public void buttonClick(final ClickEvent event)
+      {
+        final int currentIndex = container.size();
+        container.addItem(currentIndex);
+        container.getContainerProperty(currentIndex, "caption").setValue("Item " + currentIndex);
+        container.getContainerProperty(currentIndex, "description").setValue("Item at index " + currentIndex);
+      }
+    });
+    removeItemButton.addClickListener(new Button.ClickListener()
+    {
+
+      @Override
+      public void buttonClick(final ClickEvent event)
+      {
+        final int lastIndex = container.size() - 1;
+        container.removeItem(lastIndex);
+      }
+    });
+    buttonsLayout.addComponent(addItemButton);
+    buttonsLayout.addComponent(removeItemButton);
+    return buttonsLayout;
   }
 
   private Component initItemGridExamples()
@@ -85,7 +125,7 @@ public class ItemLayoutDemoUI extends UI
     final ItemGrid itemGrid = buildDefaultItemGrid();
     itemGrid.addItemClickListener(buildClickListener());
 
-    OptionGroup sample = buildSelectableOption();
+    final OptionGroup sample = buildSelectableOption();
     sample.addValueChangeListener(buildValueChangeListener(itemGrid));
     horizontalLayout.addComponent(sample);
     horizontalLayout.addComponent(itemGrid);
@@ -105,7 +145,7 @@ public class ItemLayoutDemoUI extends UI
     final ItemVertical itemVertical = buildDefaultItemVertical();
     itemVertical.addItemClickListener(buildClickListener());
 
-    OptionGroup sample = buildSelectableOption();
+    final OptionGroup sample = buildSelectableOption();
     sample.addValueChangeListener(buildValueChangeListener(itemVertical));
     horizontalLayout.addComponent(sample);
     horizontalLayout.addComponent(itemVertical);
@@ -126,7 +166,7 @@ public class ItemLayoutDemoUI extends UI
     final ItemHorizontal itemHorizontal = buildDefaultItemHorizontal();
     itemHorizontal.addItemClickListener(buildClickListener());
 
-    OptionGroup sample = buildSelectableOption();
+    final OptionGroup sample = buildSelectableOption();
     sample.addValueChangeListener(buildValueChangeListener(itemHorizontal));
     horizontalLayout.addComponent(sample);
     horizontalLayout.addComponent(itemHorizontal);
@@ -138,7 +178,6 @@ public class ItemLayoutDemoUI extends UI
   {
     final ItemGrid item = new ItemGrid();
     item.setColumns(5);
-    final IndexedContainer container = buildDefaultContainer();
     item.setContainerDataSource(container);
     return item;
   }
@@ -149,7 +188,6 @@ public class ItemLayoutDemoUI extends UI
     item.setWidth(100, Unit.PERCENTAGE);
     item.setScrollerIndex(5);
     item.setScrollInterval(3);
-    final IndexedContainer container = buildDefaultContainer();
     item.setContainerDataSource(container);
     return item;
   }
@@ -158,14 +196,12 @@ public class ItemLayoutDemoUI extends UI
   {
     final ItemVertical item = new ItemVertical();
     item.setHeight(300, Unit.PIXELS);
-    final IndexedContainer container = buildDefaultContainer();
     item.setContainerDataSource(container);
     return item;
   }
 
   private IndexedContainer buildDefaultContainer()
   {
-    final IndexedContainer container = new IndexedContainer();
     container.addContainerProperty("caption", String.class, null);
     container.addContainerProperty("description", String.class, null);
     for (int i = 0; i < 25; i++)
@@ -179,7 +215,7 @@ public class ItemLayoutDemoUI extends UI
 
   private OptionGroup buildSelectableOption()
   {
-    OptionGroup sample = new OptionGroup("Select a selectable mode");
+    final OptionGroup sample = new OptionGroup("Select a selectable mode");
     sample.addItem(1);
     sample.setItemCaption(1, "Disable");
     sample.addItem(2);

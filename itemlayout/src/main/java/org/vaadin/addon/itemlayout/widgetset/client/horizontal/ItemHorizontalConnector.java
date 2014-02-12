@@ -48,7 +48,6 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
   protected void initLayout()
   {
     getWidget().removeAll();
-
   }
 
   @Override
