@@ -5,6 +5,9 @@ import org.vaadin.addon.itemlayout.widgetset.client.layout.ItemLayoutConstant;
 import org.vaadin.addon.itemlayout.widgetset.client.model.ResourceBundle;
 import org.vaadin.addon.itemlayout.widgetset.client.vertical.ItemVerticalConstant;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -45,6 +48,10 @@ public abstract class ItemListWidget extends ComplexPanel
    * The elements list layout
    */
   private final ComplexPanel elemsListLayout;
+  /**
+   * True if the list is shown verticaly
+   */
+  private final boolean      vertical;
 
   /**
    * Default constructor
@@ -52,6 +59,7 @@ public abstract class ItemListWidget extends ComplexPanel
   public ItemListWidget(final boolean pVertical)
   {
     super();
+    vertical = pVertical;
     final Element div = DOM.createDiv();
     setElement(div);
     if (pVertical)
@@ -110,6 +118,37 @@ public abstract class ItemListWidget extends ComplexPanel
       add(nextLayout, div);
       add(elemVisibleListLayout, div);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onLoad()
+  {
+    // The following code handles vertical alignement for prev and next button depending on item displayed.
+    // We have to use deferred command otherwise getOffsetWidth return invalid value
+    Scheduler.get().scheduleDeferred(new ScheduledCommand()
+    {
+      @Override
+      public void execute()
+      {
+        if (vertical)
+        {
+          int offsetWidth = elemsListLayout.getOffsetWidth();
+          prevLayout.getElement().getStyle().setWidth(offsetWidth, Unit.PX);
+          nextLayout.getElement().getStyle().setWidth(offsetWidth, Unit.PX);
+        }
+        else
+        {
+          int offsetHeight = elemsListLayout.getOffsetHeight();
+          prevLayout.getElement().getStyle().setHeight(offsetHeight, Unit.PX);
+          prevLayout.getElement().getStyle().setLineHeight(offsetHeight, Unit.PX);
+          nextLayout.getElement().getStyle().setHeight(offsetHeight, Unit.PX);
+          nextLayout.getElement().getStyle().setLineHeight(offsetHeight, Unit.PX);
+        }
+      }
+    });
   }
 
   /**

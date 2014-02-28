@@ -4,8 +4,11 @@ import org.vaadin.addon.itemlayout.layout.AbstractItemLayout;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * Default component generator. Contains a label with item id and a list of all
@@ -35,6 +38,7 @@ public final class DefaultItemGenerator implements ItemGenerator
   @Override
   public Component generateItem(final AbstractItemLayout pSource, final Object pItemId)
   {
+    VerticalLayout layout = new VerticalLayout();
     final Label defaultLabel = new Label(pItemId.toString());
     final Item item = pSource.getContainerDataSource().getItem(pItemId);
     final Property<?> captionProperty = item.getItemProperty(CAPTION);
@@ -47,6 +51,10 @@ public final class DefaultItemGenerator implements ItemGenerator
     {
       defaultLabel.setDescription((String) descriptionProperty.getValue());
     }
-    return defaultLabel;
+    layout.setWidth(25, Unit.PIXELS);
+    layout.setHeight(25, Unit.PIXELS);
+    layout.addComponent(defaultLabel);
+    layout.setComponentAlignment(defaultLabel, Alignment.MIDDLE_CENTER);
+    return layout;
   }
 }
