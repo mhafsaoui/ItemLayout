@@ -51,8 +51,8 @@ public final class DefaultItemGenerator implements ItemGenerator
     {
       defaultLabel.setDescription((String) descriptionProperty.getValue());
     }
-    layout.setWidth(25, Unit.PIXELS);
-    layout.setHeight(25, Unit.PIXELS);
+    layout.setWidth(35, Unit.PIXELS);
+    layout.setHeight(35, Unit.PIXELS);
     layout.addComponent(defaultLabel);
     layout.setComponentAlignment(defaultLabel, Alignment.MIDDLE_CENTER);
     return layout;

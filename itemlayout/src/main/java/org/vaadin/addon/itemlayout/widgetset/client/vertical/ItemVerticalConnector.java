@@ -89,6 +89,16 @@ public class ItemVerticalConnector extends AbstractListLayoutConnector
    * {@inheritDoc}
    */
   @Override
+  protected boolean isElementClipped(final Widget pWidget)
+  {
+    return pWidget.getElement().getAbsoluteTop() > getElemVisibleListLayout().getElement()
+        .getAbsoluteBottom();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected FocusPanel getNextLayout()
   {
     return getWidget().getNextLayout();

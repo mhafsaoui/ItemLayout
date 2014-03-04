@@ -88,6 +88,17 @@ public class ItemHorizontalConnector extends AbstractListLayoutConnector
    * {@inheritDoc}
    */
   @Override
+  protected boolean isElementClipped(final Widget pWidget)
+  {
+    final int widgetLeft = pWidget.getElement().getAbsoluteLeft();
+    final int visibleElementRight = getElemVisibleListLayout().getElement().getAbsoluteRight();
+    return widgetLeft > visibleElementRight;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected FocusPanel getNextLayout()
   {
     return getWidget().getNextLayout();

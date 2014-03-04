@@ -135,13 +135,19 @@ public abstract class ItemListWidget extends ComplexPanel
       {
         if (vertical)
         {
-          int offsetWidth = elemsListLayout.getOffsetWidth();
+          final int offsetWidth = elemsListLayout.getOffsetWidth();
           prevLayout.getElement().getStyle().setWidth(offsetWidth, Unit.PX);
           nextLayout.getElement().getStyle().setWidth(offsetWidth, Unit.PX);
+
+          final int prevHeight = prevLayout.getOffsetHeight();
+          elemVisibleListLayout.getElement().getStyle().setTop(prevHeight, Unit.PX);
+          final int nextHeight = nextLayout.getOffsetHeight();
+          elemVisibleListLayout.getElement().getStyle().setBottom(nextHeight, Unit.PX);
+
         }
         else
         {
-          int offsetHeight = elemsListLayout.getOffsetHeight();
+          final int offsetHeight = elemsListLayout.getOffsetHeight();
           prevLayout.getElement().getStyle().setHeight(offsetHeight, Unit.PX);
           prevLayout.getElement().getStyle().setLineHeight(offsetHeight, Unit.PX);
           nextLayout.getElement().getStyle().setHeight(offsetHeight, Unit.PX);

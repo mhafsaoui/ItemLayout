@@ -42,5 +42,6 @@ public class ItemListState extends ItemLayoutState
    * Scroller index, default value is 0
    */
   public int                scrollerIndex    = 0;
+  public static String      SCROLLER_INDEX   = "scrollerIndex";
 
 }

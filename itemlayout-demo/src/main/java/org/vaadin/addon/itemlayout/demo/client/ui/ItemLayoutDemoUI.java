@@ -136,9 +136,11 @@ public class ItemLayoutDemoUI extends UI
   {
     // Layout to show examples
     final VerticalLayout example = new VerticalLayout();
+    example.setHeight(100, Unit.PERCENTAGE);
     example.addComponent(new Label("Demo for ItemVertical"));
 
     final HorizontalLayout horizontalLayout = new HorizontalLayout();
+    horizontalLayout.setHeight(100, Unit.PERCENTAGE);
     horizontalLayout.setMargin(true);
     example.addComponent(horizontalLayout);
 
@@ -195,7 +197,7 @@ public class ItemLayoutDemoUI extends UI
   private ItemVertical buildDefaultItemVertical()
   {
     final ItemVertical item = new ItemVertical();
-    item.setHeight(300, Unit.PIXELS);
+    item.setHeight(100, Unit.PERCENTAGE);
     item.setContainerDataSource(container);
     return item;
   }

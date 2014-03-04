@@ -60,7 +60,9 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
                                                              final ElementResizeEvent e)
                                                          {
                                                            updateScrollButtonsVisibility();
+                                                           updateClippedElement();
                                                          }
+
                                                        };
 
   /**
@@ -88,7 +90,12 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   public void onStateChanged(final StateChangeEvent pStateChangeEvent)
   {
     super.onStateChanged(pStateChangeEvent);
-    hideDefaultScrolledElems();
+    final boolean hasScrollIndexChanged = pStateChangeEvent.hasPropertyChanged(ItemListState.SCROLLER_INDEX);
+    if (hasScrollIndexChanged)
+    {
+      hideDefaultScrolledElems();
+      updateClippedElement();
+    }
   }
 
   /**
@@ -149,6 +156,19 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
   {
     showPreviousButton(isScrolledElems());
     showNextButton(isClippedElems());
+  }
+
+  private void updateClippedElement()
+  {
+    for (int i = getState().scrollerIndex; i < getWidgetCount(); i++)
+    {
+      final Widget currentWidget = getWidget(i);
+      if (currentWidget != null)
+      {
+        final boolean isClipped = isElementClipped(currentWidget);
+        showWidget(currentWidget, !isClipped);
+      }
+    }
   }
 
   /**
@@ -275,6 +295,7 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
       {
         scrollNext();
         updateScrollButtonsVisibility();
+        updateClippedElement();
       }
     }
   }
@@ -291,6 +312,7 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
       {
         scrollPrev();
         updateScrollButtonsVisibility();
+        updateClippedElement();
       }
     }
   }
@@ -433,6 +455,13 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    * @return {@link boolean} true if there is clipped elements, false otherwise
    */
   protected abstract boolean isClippedElems();
+
+  /**
+   * Determines if given widget is clipped or not
+   * 
+   * @return {@link boolean} true if widget is clipped , false otherwise
+   */
+  protected abstract boolean isElementClipped(final Widget pWidget);
 
   /**
    * Get the scroll next layout

@@ -21,7 +21,8 @@
 .v-itemlayout-scroll-visiblelist {
 	overflow: hidden !important;
 }
-.v-itemlayout-scroll-visiblelist > table > tr > td {
+
+.v-itemlayout-scroll-visiblelist>table>tbody>tr>td {
 	vertical-align: middle !important;
 	text-align: center !important;
 }
@@ -34,18 +35,16 @@
 	visibility: hidden !important;
 }
 
-.v-itemlayout-scroll-prev img {
-	vertical-align: middle;
+.v-itemlayout-scroll-prev,.v-itemlayout-scroll-next {
 	text-align: center;
 }
 
-.v-itemlayout-scroll-next img {
+.v-itemlayout-scroll-prev img,.v-itemlayout-scroll-next img {
 	vertical-align: middle;
-	text-align: center;
 }
 
 /* Style for Horizontal */
-.v-itemlayout-horizontal .v-itemlayout-scroll-visiblelist > table {
+.v-itemlayout-horizontal .v-itemlayout-scroll-visiblelist>table {
 	height: 100%;
 }
 
@@ -58,10 +57,19 @@
 }
 
 /* Style for Vertical */
+.v-itemlayout-vertical {	
+	position: relative;
+}
 .v-itemlayout-vertical .v-itemlayout-scroll-visiblelist {
-	height: 100%;
+	width: 100%;
+	position: absolute;
 }
 
 .v-itemlayout-vertical .v-itemlayout-scroll-visiblelist table {
 	width: 100%;
+	
+}
+.v-itemlayout-vertical .v-itemlayout-scroll-next {
+	position: absolute;
+	bottom: 0;
 }
