@@ -57,17 +57,12 @@
 }
 
 /* Style for Vertical */
-.v-itemlayout-vertical {	
-	position: relative;
-}
 .v-itemlayout-vertical .v-itemlayout-scroll-visiblelist {
-	width: 100%;
 	position: absolute;
 }
 
 .v-itemlayout-vertical .v-itemlayout-scroll-visiblelist table {
 	width: 100%;
-	
 }
 .v-itemlayout-vertical .v-itemlayout-scroll-next {
 	position: absolute;

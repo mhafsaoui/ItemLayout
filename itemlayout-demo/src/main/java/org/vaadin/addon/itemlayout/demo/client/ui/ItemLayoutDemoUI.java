@@ -146,6 +146,7 @@ public class ItemLayoutDemoUI extends UI
 
     final ItemVertical itemVertical = buildDefaultItemVertical();
     itemVertical.addItemClickListener(buildClickListener());
+    itemVertical.setHeight(100, Unit.PERCENTAGE);
 
     final OptionGroup sample = buildSelectableOption();
     sample.addValueChangeListener(buildValueChangeListener(itemVertical));
@@ -188,8 +189,6 @@ public class ItemLayoutDemoUI extends UI
   {
     final ItemHorizontal item = new ItemHorizontal();
     item.setWidth(100, Unit.PERCENTAGE);
-    item.setScrollerIndex(5);
-    item.setScrollInterval(3);
     item.setContainerDataSource(container);
     return item;
   }

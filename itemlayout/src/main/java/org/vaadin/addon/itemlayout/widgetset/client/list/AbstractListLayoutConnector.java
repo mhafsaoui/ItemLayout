@@ -59,8 +59,8 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
                                                          public void onElementResize(
                                                              final ElementResizeEvent e)
                                                          {
-                                                           updateScrollButtonsVisibility();
                                                            updateClippedElement();
+                                                           updateScrollButtonsVisibility();
                                                          }
 
                                                        };
@@ -160,13 +160,27 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
 
   private void updateClippedElement()
   {
+    boolean firstClippedFound = false;
     for (int i = getState().scrollerIndex; i < getWidgetCount(); i++)
     {
       final Widget currentWidget = getWidget(i);
       if (currentWidget != null)
       {
-        final boolean isClipped = isElementClipped(currentWidget);
-        showWidget(currentWidget, !isClipped);
+        if (firstClippedFound)
+        {
+          showWidget(currentWidget, false);
+        }
+        else
+        {
+          showWidget(currentWidget, true);
+          final boolean isClipped = isElementClipped(currentWidget);
+          if (isClipped)
+          {
+            firstClippedFound = true;
+            showWidget(currentWidget, false);
+          }
+        }
+
       }
     }
   }
@@ -294,8 +308,8 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
       if (isClippedElems())
       {
         scrollNext();
-        updateScrollButtonsVisibility();
         updateClippedElement();
+        updateScrollButtonsVisibility();
       }
     }
   }
@@ -311,8 +325,8 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
       if (isScrolledElems())
       {
         scrollPrev();
-        updateScrollButtonsVisibility();
         updateClippedElement();
+        updateScrollButtonsVisibility();
       }
     }
   }
