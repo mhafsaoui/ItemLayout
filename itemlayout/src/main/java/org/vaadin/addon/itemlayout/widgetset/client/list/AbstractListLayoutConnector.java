@@ -69,6 +69,18 @@ public abstract class AbstractListLayoutConnector extends AbstractItemLayoutConn
    * {@inheritDoc}
    */
   @Override
+  protected void init()
+  {
+    super.init();
+    showPreviousButton(false);
+    showNextButton(false);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public ItemListState getState()
   {
     return (ItemListState) super.getState();
