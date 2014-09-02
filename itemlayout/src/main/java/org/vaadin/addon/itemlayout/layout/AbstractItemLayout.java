@@ -35,7 +35,7 @@ import com.vaadin.ui.Component;
  * <p>
  * Components in a {@link AbstractItemLayout} will not have their caption nor icon rendered.
  * </p>
- * 
+ *
  * @author Guillaume Lamirand
  */
 public abstract class AbstractItemLayout extends AbstractLayout implements Container, Container.Viewer,
@@ -112,7 +112,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Notifies the component that it is connected to an application.
-   * 
+   *
    * @see com.vaadin.ui.Component#attach()
    */
 
@@ -126,7 +126,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Notifies the component that it is detached from the application
-   * 
+   *
    * @see com.vaadin.ui.Component#detach()
    */
 
@@ -139,7 +139,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   /**
    * Notifies this listener that the Property's value has changed.
    * Also listens changes in rendered items to refresh content area.
-   * 
+   *
    * @see com.vaadin.data.Property.ValueChangeListener#valueChange(Property.ValueChangeEvent)
    */
   @Override
@@ -274,7 +274,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * Helper method to remove listeners and maintain correct component
    * hierarchy. Detaches properties and components if those are no more
    * rendered in client.
-   * 
+   *
    * @param pOldListenedProperties
    *          set of properties that where listened in last render
    * @param pOldVisibleComponents
@@ -285,10 +285,9 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   {
     if (pOldVisibleComponents != null)
     {
-      final Set<Component> visibleComponents = new HashSet<Component>();
       for (final Component c : pOldVisibleComponents)
       {
-        if (!visibleComponents.contains(c))
+        if (!components.contains(c))
         {
           super.removeComponent(c);
         }
@@ -310,7 +309,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Adds an Item click listener for the object.
-   * 
+   *
    * @param pListener
    *          the listener to add
    */
@@ -321,7 +320,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Removes an Item click listener for the object.
-   * 
+   *
    * @param pListener
    *          the listener to remove
    */
@@ -335,7 +334,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Called when a item has been click
-   * 
+   *
    * @param pEvent
    */
   protected void fireItemClick(final ItemClickEvent pEvent)
@@ -352,7 +351,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * <p>
    * The item layout is not selectable by default.
    * </p>
-   * 
+   *
    * @return the Value of property selectable.
    */
   public boolean isSelectable()
@@ -365,7 +364,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * <p>
    * The item layout is not selectable by default.
    * </p>
-   * 
+   *
    * @param pSelectable
    *          the New value of property selectable.
    */
@@ -381,7 +380,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Is the select in multiselect mode? In multiselect mode
-   * 
+   *
    * @return the Value of property multiSelect.
    */
   public boolean isMultiSelectable()
@@ -391,7 +390,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Sets the multiselect mode. Setting multiselect mode false will clean current selection.
-   * 
+   *
    * @param pMultiSelect
    *          the new value of property multiSelect.
    */
@@ -408,7 +407,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Tests if an item is selected.
-   * 
+   *
    * @param pItemId
    *          the Id the of the item to be tested.
    * @return <code>true</code> if item is selected
@@ -437,7 +436,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
    * single-select mode, you can make an item represent the empty selection by
    * calling <code>setNullSelectionItemId()</code>. This way you can for
    * instance set an icon and caption for the null selection item.
-   * 
+   *
    * @param pNullSelectionAllowed
    *          whether or not to allow empty selection
    */
@@ -452,7 +451,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Checks if null empty selection is allowed by the user.
-   * 
+   *
    * @return whether or not empty selection is allowed
    * @see #setNullSelectionAllowed(boolean)
    */
@@ -469,7 +468,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Selects an item, by default it will notify all listener
-   * 
+   *
    * @param pItemId
    *          the identifier of the Item to be selected.
    */
@@ -497,7 +496,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Unselects an item, by default it will notify all listener
-   * 
+   *
    * @param pItemId
    *          the identifier of the Item to be unselected.
    * @see #getNullSelectionItemId()
@@ -510,7 +509,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Unselects an item.
-   * 
+   *
    * @param pItemId
    *          the identifier of the Item to be unselected.
    * @param pFireEvent
@@ -534,7 +533,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Handles click event
-   * 
+   *
    * @param item
    *          id
    *          item id selected
@@ -566,7 +565,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Get list of selected items
-   * 
+   *
    * @return {@link Set} of items
    */
   public Set<String> getSelectedItems()
@@ -577,7 +576,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
   /**
    * Returns item identifiers of the items which are currently rendered on the
    * client.
-   * 
+   *
    * @return items rendered
    * @see com.vaadin.ui.Select#getVisibleItemIds()
    */
@@ -609,7 +608,7 @@ public abstract class AbstractItemLayout extends AbstractLayout implements Conta
 
   /**
    * Set the item component generator to the {@link AbstractItemLayout}.
-   * 
+   *
    * @param pItemGenerator
    *          the {@link ItemGenerator} to use
    */
